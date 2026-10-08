@@ -1,13 +1,7 @@
 <div>
     @section('header_title', $user_id ? 'Editar Colaborador' : 'Novo Colaborador')
 
-    <div class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <h2 class="text-2xl md:text-3xl text-white font-bold tracking-tight mb-1 md:mb-2">
-                {{ $user_id ? 'Editar Colaborador' : 'Novo Colaborador' }}
-            </h2>
-            <p class="text-sm md:text-base text-zinc-400">Preencha os dados abaixo para gerenciar o acesso.</p>
-        </div>
+    <div class="mb-6 md:mb-8 flex justify-end">
         <a wire:navigate href="{{ route('collaborators.index') }}" class="w-full md:w-auto px-6 py-2.5 rounded-xl border border-zinc-700 text-zinc-300 hover:bg-white/5 hover:text-white transition-all font-medium text-sm flex items-center justify-center gap-2">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Voltar
@@ -82,14 +76,14 @@
                         </h3>
                         
                         <div class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 md:gap-6">
-                            <label class="relative w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-dashed border-zinc-700 flex items-center justify-center overflow-hidden bg-zinc-900/50 cursor-pointer hover:border-barber-primary transition-colors group">
+                            <label class="relative w-24 h-24 md:w-28 md:h-28 rounded-full border-2 border-dashed border-zinc-700 flex items-center justify-center overflow-hidden bg-zinc-900/50 cursor-pointer hover:border-barber-primary transition-colors group">
                                 <input type="file" wire:model="photo" accept="image/*" class="hidden">
                                 @if ($photo)
                                     <img src="{{ $photo->temporaryUrl() }}" class="w-full h-full object-cover">
                                 @else
                                     <div class="flex flex-col items-center justify-center text-zinc-500 group-hover:text-barber-primary transition-colors">
-                                        <svg class="w-8 h-8 md:w-10 md:h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
-                                        <span class="text-[10px] md:text-xs font-semibold uppercase tracking-wider text-center px-2">Escolher<br>Foto</span>
+                                        <svg class="w-6 h-6 md:w-8 md:h-8 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/></svg>
+                                        <span class="text-[9px] md:text-[10px] font-semibold uppercase tracking-wider text-center px-1">Escolher<br>Foto</span>
                                     </div>
                                 @endif
                                 <div wire:loading wire:target="photo" class="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
