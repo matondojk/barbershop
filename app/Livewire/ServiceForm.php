@@ -58,7 +58,7 @@ class ServiceForm extends Component
                 'duration_minutes' => $this->duration_minutes,
                 'is_active' => $this->is_active,
             ]);
-            session()->flash('success', 'Corte atualizado com sucesso!');
+            session()->flash('success', 'Serviço atualizado com sucesso!');
         } else {
             Service::create([
                 'name' => $this->name,
@@ -67,7 +67,7 @@ class ServiceForm extends Component
                 'duration_minutes' => $this->duration_minutes,
                 'is_active' => $this->is_active,
             ]);
-            session()->flash('success', 'Corte cadastrado com sucesso!');
+            session()->flash('success', 'Serviço cadastrado com sucesso!');
         }
 
         return redirect()->route('services.index');

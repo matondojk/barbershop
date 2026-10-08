@@ -31,7 +31,7 @@
         </div>
         <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">
             <div class="absolute -right-4 -top-4 w-20 h-20 bg-green-500/10 rounded-full blur-xl group-hover:bg-green-500/20 transition-all"></div>
-            <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Cortes Concluídos</p>
+            <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Serviços Concluídos</p>
             <h3 class="text-3xl text-white font-serif">{{ $stats['concluidos'] }}</h3>
         </div>
         <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">

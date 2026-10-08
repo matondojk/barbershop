@@ -72,7 +72,7 @@
 
                     <a wire:navigate href="{{ route('services.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl hover:bg-white/5 hover:text-barber-primary transition-colors {{ request()->routeIs('services.*') ? 'bg-barber-primary/10 text-barber-primary border border-barber-primary/20 shadow-[inset_0_0_10px_rgba(237,179,41,0.1)]' : 'text-zinc-400 font-medium' }}">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/></svg>
-                        Cortes
+                        Serviços
                     </a>
                 @endif
             </nav>
