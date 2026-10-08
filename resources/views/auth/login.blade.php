@@ -2,80 +2,102 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <title>Barbearia Barcelona | Área do Cliente</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=montserrat:400,500,600|playfair-display:500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=open-sans:300,400,500,600,700,800&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
-        body, p, a, button, input, .font-sans { font-family: 'Montserrat', sans-serif; }
+        body { font-family: 'Open Sans', sans-serif; }
     </style>
 </head>
-<body class="bg-[#050505] text-zinc-300 min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-        <!-- Logo -->
-        <div class="flex justify-center mb-10">
-            <a href="/">
-                <img src="{{ asset('images/logo.png') }}" alt="Barbearia Barcelona" class="h-16 w-auto object-contain hover:scale-105 transition-transform duration-300">
-            </a>
-        </div>
+<body class="bg-black text-zinc-300 min-h-screen font-sans selection:bg-barber-primary selection:text-black antialiased relative">
+    
+    <!-- Background Full Screen Image -->
+    <div class="fixed inset-0 w-full h-full z-0">
+        <div class="absolute inset-0 bg-black/60 z-10"></div>
+        <img src="{{ asset('images/bg/login-bg-1.jpg') }}" alt="Background" class="w-full h-full object-cover">
+    </div>
 
-        <!-- Login Box -->
-        <div class="bg-[#111] p-10 rounded-2xl border border-zinc-800 shadow-2xl relative overflow-hidden">
-            <!-- Glow effect -->
-            <div class="absolute top-0 right-0 w-32 h-32 bg-barber-primary/10 rounded-full blur-3xl"></div>
+    <!-- Login Container -->
+    <div class="relative z-20 min-h-screen flex flex-col justify-center items-center p-4">
+        
+        <!-- Glassmorphism Card -->
+        <div class="w-full max-w-sm sm:max-w-md bg-[#0a0a0a]/70 backdrop-blur-xl border border-zinc-800/50 p-8 sm:p-10 rounded-[2rem] shadow-2xl">
+            
+            <!-- Logo -->
+            <div class="flex justify-center mb-8">
+                <a href="/">
+                    <img src="{{ asset('images/logo.png') }}" alt="Barbearia Barcelona" class="h-16 w-auto object-contain drop-shadow-[0_0_15px_rgba(237,179,41,0.2)]">
+                </a>
+            </div>
 
-            <div class="text-center mb-8 relative z-10">
-                <h2 class="text-3xl text-white font-serif mb-2">Acesse sua Conta</h2>
-                <p class="text-zinc-500 text-sm">Entre para agendar seu horário</p>
+            <div class="text-center mb-8">
+                <h2 class="text-2xl text-white font-bold tracking-tight mb-1">Bem-vindo(a)</h2>
+                <p class="text-zinc-400 text-sm font-light">Faça login para agendar seu horário</p>
             </div>
 
             @if ($errors->any())
-                <div class="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-lg mb-6 text-sm">
-                    <ul class="list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-2xl mb-6 text-sm font-medium text-center backdrop-blur-md">
+                    @foreach ($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-6 relative z-10">
+            <form method="POST" action="{{ route('login') }}" class="space-y-5">
                 @csrf
 
+                <!-- CPF Field -->
                 <div>
-                    <label for="cpf" class="block text-sm font-medium text-zinc-400 mb-2">CPF</label>
-                    <input id="cpf" type="text" name="cpf" value="{{ old('cpf') }}" required autofocus
-                        placeholder="000.000.000-00"
-                        maxlength="14"
-                        class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors placeholder-zinc-700"
-                        oninput="maskCPF(this)">
+                    <div class="relative flex items-center">
+                        <div class="absolute left-4 text-zinc-400">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
+                        <input id="cpf" type="text" name="cpf" value="{{ old('cpf') }}" required autofocus
+                            placeholder="Seu CPF"
+                            maxlength="14"
+                            class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-2xl pl-12 pr-4 py-3.5 text-white placeholder-zinc-500 focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium"
+                            oninput="maskCPF(this)">
+                    </div>
                 </div>
 
+                <!-- Password Field -->
                 <div>
-                    <label for="password" class="block text-sm font-medium text-zinc-400 mb-2">Senha (6 primeiros dígitos do CPF)</label>
-                    <input id="password" type="password" name="password" required
-                        class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
+                    <div class="relative flex items-center">
+                        <div class="absolute left-4 text-zinc-400">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </div>
+                        <input id="password" type="password" name="password" required
+                            placeholder="Senha (6 primeiros dígitos)"
+                            class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-2xl pl-12 pr-4 py-3.5 text-white placeholder-zinc-500 focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium">
+                    </div>
                 </div>
 
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center gap-2">
-                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-zinc-800 bg-[#0a0a0a] text-barber-primary focus:ring-barber-primary focus:ring-offset-[#111]">
-                        <span class="text-sm text-zinc-400">Lembrar de mim</span>
+                <!-- Remember Me -->
+                <div class="flex items-center pt-1 pb-2">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <div class="relative flex items-center justify-center">
+                            <input type="checkbox" name="remember" class="peer sr-only">
+                            <div class="w-5 h-5 rounded border border-zinc-600 bg-zinc-900/50 peer-checked:bg-barber-primary peer-checked:border-barber-primary transition-all"></div>
+                            <svg class="absolute w-3 h-3 text-black opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <span class="text-sm text-zinc-400 group-hover:text-zinc-200 transition-colors">Lembrar de mim</span>
                     </label>
                 </div>
 
-                <button type="submit" class="w-full py-4 bg-barber-primary text-black font-bold uppercase tracking-widest rounded-lg hover:bg-barber-light transition-all hover:shadow-[0_0_20px_rgba(237,179,41,0.4)]">
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-4 bg-barber-primary hover:bg-barber-light text-black text-sm font-extrabold uppercase tracking-widest rounded-2xl transition-all shadow-[0_0_15px_rgba(237,179,41,0.15)] hover:shadow-[0_0_25px_rgba(237,179,41,0.3)] active:scale-95">
                     Entrar
                 </button>
             </form>
             
         </div>
+        
     </div>
 
     <script>
@@ -95,7 +117,6 @@
             input.value = v;
         }
         
-        // Formatar no load caso haja um "old('cpf')" populado
         document.addEventListener('DOMContentLoaded', () => {
             const cpfInput = document.getElementById('cpf');
             if (cpfInput && cpfInput.value) maskCPF(cpfInput);
