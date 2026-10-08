@@ -170,17 +170,40 @@
 
     <!-- STEP 6: Sucesso -->
     @if($step == 6)
-        <div class="text-center py-10 max-w-lg mx-auto">
-            <div class="w-24 h-24 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8 relative">
+        <div class="text-center py-6 max-w-lg mx-auto">
+            <div class="w-20 h-20 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 relative">
                 <div class="absolute inset-0 bg-green-500/20 rounded-full animate-ping"></div>
-                <svg class="w-12 h-12 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <svg class="w-10 h-10 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
             </div>
-            <h3 class="text-4xl text-white font-serif mb-4">Agendamento Confirmado!</h3>
-            <p class="text-zinc-400 mb-10 text-lg">Te esperamos na barbearia no dia <strong class="text-white">{{ \Carbon\Carbon::parse($appointment_date)->format('d/m/Y') }}</strong> às <strong class="text-white">{{ $start_time }}</strong>.</p>
+            <h3 class="text-3xl text-white font-serif mb-2">Agendamento Confirmado!</h3>
+            <p class="text-zinc-400 mb-8 text-sm">Os detalhes foram enviados para o seu WhatsApp.</p>
             
-            <button wire:click="$set('step', 1)" class="px-10 py-4 border-2 border-zinc-700 text-white rounded-xl hover:bg-zinc-800 hover:border-zinc-600 transition-all uppercase tracking-widest text-sm font-bold">
-                Fazer Novo Agendamento
-            </button>
+            <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 p-6 rounded-2xl text-left space-y-4 mb-8">
+                <h4 class="text-white font-medium mb-2 border-b border-zinc-800 pb-2">Resumo do Agendamento</h4>
+                
+                <div class="flex justify-between items-center">
+                    <span class="text-zinc-500 text-sm">Profissional</span>
+                    <span class="text-white font-medium">{{ $barbers->firstWhere('id', $barber_id)?->name ?? 'Nossa Equipe' }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-zinc-500 text-sm">Serviço</span>
+                    <span class="text-white font-medium">{{ $services->firstWhere('id', $service_id)?->name }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-zinc-500 text-sm">Data e Hora</span>
+                    <span class="text-barber-primary font-bold">{{ \Carbon\Carbon::parse($appointment_date)->format('d/m/Y') }} às {{ $start_time }}</span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <a href="{{ url('/agendamento/' . $manage_hash) }}" class="block w-full py-4 bg-barber-primary text-black font-bold uppercase tracking-widest rounded-xl hover:bg-barber-light transition-all shadow-[0_0_15px_rgba(237,179,41,0.2)] text-sm">
+                    Gerenciar meu agendamento
+                </a>
+                
+                <button wire:click="$set('step', 1)" class="text-zinc-500 hover:text-white transition-colors text-sm underline">
+                    Agendar para outra pessoa
+                </button>
+            </div>
         </div>
     @endif
 

@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         $admin = User::create([
             'name' => 'Admin Barcelona',
             'cpf' => '11111111111',
-            'whatsapp' => '11999999999',
+            'whatsapp' => '37998220372',
             'password' => Hash::make('111111'),
             'roles' => ['admin', 'barber'],
             'commission_type' => 'percentage',
@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
             $barbers[] = User::create([
                 'name' => $b['name'],
                 'cpf' => $b['cpf'],
-                'whatsapp' => '119' . rand(10000000, 99999999),
+                'whatsapp' => '37998220372',
                 'password' => Hash::make(substr($b['cpf'], 0, 6)),
                 'roles' => ['barber'],
                 'commission_type' => 'percentage',
@@ -128,7 +128,7 @@ class DatabaseSeeder extends Seeder
             $nome = $nomes[array_rand($nomes)];
             $sobrenome = $sobrenomes[array_rand($sobrenomes)];
             $cpf = sprintf('%03d%03d%03d%02d', rand(100, 999), rand(100, 999), rand(100, 999), rand(10, 99));
-            $whatsapp = '119' . rand(10000000, 99999999);
+            $whatsapp = '37998220372';
 
             $customers[] = Customer::create([
                 'name' => "$nome $sobrenome",

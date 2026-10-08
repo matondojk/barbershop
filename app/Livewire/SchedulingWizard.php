@@ -21,6 +21,7 @@ class SchedulingWizard extends Component
     public $service_id;
     public $appointment_date;
     public $start_time;
+    public $manage_hash;
 
     // Derived data
     public $available_slots = [];
@@ -204,6 +205,9 @@ class SchedulingWizard extends Component
             ]);
         }
 
+        $manageHash = \Illuminate\Support\Str::random(32);
+        $this->manage_hash = $manageHash;
+        
         $appointment = Appointment::create([
             'customer_id' => $customer->id,
             'user_id' => $this->barber_id,
@@ -212,6 +216,7 @@ class SchedulingWizard extends Component
             'start_time' => $this->start_time,
             'end_time' => $end_time,
             'status' => 'scheduled',
+            'manage_hash' => $manageHash,
         ]);
 
         $barber = User::find($this->barber_id);
@@ -221,7 +226,8 @@ class SchedulingWizard extends Component
 
         // WhatsApp to Customer
         if (!empty($customer->whatsapp)) {
-            $customerMsg = "Olá {$customer->name}! Seu agendamento para *{$serviceName}* na Barbearia Barcelona está confirmado!\n\n📅 Data: {$dateFormatted}\n⏰ Horário: {$timeFormatted}\n💈 Barbeiro: " . ($barber ? $barber->name : 'Nossa equipe') . "\n\nTe esperamos lá!";
+            $manageUrl = url('/agendamento/' . $manageHash);
+            $customerMsg = "Olá {$customer->name}! Seu agendamento para *{$serviceName}* na Barbearia Barcelona está confirmado!\n\n📅 Data: {$dateFormatted}\n⏰ Horário: {$timeFormatted}\n💈 Barbeiro: " . ($barber ? $barber->name : 'Nossa equipe') . "\n\nTe esperamos lá!\n\nPrecisa alterar ou cancelar? Acesse o link abaixo:\n{$manageUrl}";
             \App\Jobs\SendWhatsAppMessage::dispatch($customer->whatsapp, $customerMsg);
         }
 

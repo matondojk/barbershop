@@ -15,13 +15,20 @@ class WhatsAppService
     {
         $this->apiUrl = config('services.evolution.url', env('EVOLUTION_API_URL', 'http://host.docker.internal:8080'));
         $this->apiKey = config('services.evolution.key', env('EVOLUTION_API_KEY'));
-        $this->instance = config('services.evolution.instance', env('EVOLUTION_INSTANCE', 'Teste'));
+        
+        $activeInstance = \App\Models\WhatsappInstance::getActiveInstanceName();
+        $this->instance = $activeInstance ?: config('services.evolution.instance', env('EVOLUTION_INSTANCE', 'Teste'));
     }
 
     public function sendMessage(string $phone, string $message): bool
     {
         if (empty($this->apiKey)) {
             Log::warning("Evolution API Key not configured.");
+            return false;
+        }
+
+        if (empty($this->instance)) {
+            Log::warning("Nenhuma instância ativa do WhatsApp configurada.");
             return false;
         }
 
@@ -34,6 +41,8 @@ class WhatsAppService
         }
 
         try {
+            Log::info("Enviando WhatsApp para {$number} usando instância {$this->instance}: \n{$message}");
+
             $response = Http::withHeaders([
                 'apikey' => $this->apiKey,
                 'Content-Type' => 'application/json'

@@ -19,7 +19,7 @@
     
     <!-- Background Full Screen Image -->
     <div class="fixed inset-0 w-full h-full z-0">
-        <div class="absolute inset-0 bg-black/70 z-10"></div>
+        <div class="absolute inset-0 bg-black/80 z-10"></div>
         <img src="{{ asset('images/bg/login-bg-1.jpg') }}" alt="Background" class="w-full h-full object-cover">
     </div>
 
@@ -123,6 +123,11 @@
                         <a wire:navigate href="{{ route('collaborators.index') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-300 {{ request()->routeIs('collaborators.*') ? 'bg-gradient-to-r from-barber-primary/10 to-transparent text-barber-primary border-l-2 border-barber-primary shadow-[inset_0_0_20px_rgba(237,179,41,0.05)]' : 'text-zinc-400 text-sm' }}" :class="!sidebarExpanded ? 'justify-center px-0' : ''" title="Equipe">
                             <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('collaborators.*') ? 'text-barber-primary' : 'text-zinc-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                             <span x-show="sidebarExpanded" class="font-medium truncate transition-opacity duration-300">Equipe</span>
+                        </a>
+
+                        <a wire:navigate href="{{ route('whatsapp.index') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-300 {{ request()->routeIs('whatsapp.*') ? 'bg-gradient-to-r from-barber-primary/10 to-transparent text-barber-primary border-l-2 border-barber-primary shadow-[inset_0_0_20px_rgba(237,179,41,0.05)]' : 'text-zinc-400 text-sm' }}" :class="!sidebarExpanded ? 'justify-center px-0' : ''" title="WhatsApp">
+                            <svg class="w-5 h-5 flex-shrink-0 {{ request()->routeIs('whatsapp.*') ? 'text-barber-primary' : 'text-zinc-500' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                            <span x-show="sidebarExpanded" class="font-medium truncate transition-opacity duration-300">WhatsApp</span>
                         </a>
                     </div>
                 @endif

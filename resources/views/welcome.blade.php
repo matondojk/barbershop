@@ -69,7 +69,7 @@
 
                 <!-- CTA Desktop -->
                 <div class="hidden md:block">
-                    <a href="#contact" class="px-6 py-2.5 bg-barber-primary text-black text-sm font-bold uppercase tracking-wider rounded-full hover:bg-barber-light transition-all shadow-[0_0_15px_rgba(237,179,41,0.3)] hover:shadow-[0_0_25px_rgba(237,179,41,0.6)]">
+                    <a href="{{ route('scheduling') }}" class="px-6 py-2.5 bg-barber-primary text-black text-sm font-bold uppercase tracking-wider rounded-full hover:bg-barber-light transition-all shadow-[0_0_15px_rgba(237,179,41,0.3)] hover:shadow-[0_0_25px_rgba(237,179,41,0.6)]">
                         Agendar
                     </a>
                 </div>
@@ -94,7 +94,7 @@
             <a href="#services" class="mobile-link text-2xl font-serif text-white hover:text-barber-primary transition-colors">Serviços</a>
             <a href="#about" class="mobile-link text-2xl font-serif text-white hover:text-barber-primary transition-colors">A Barbearia</a>
             <a href="#gallery" class="mobile-link text-2xl font-serif text-white hover:text-barber-primary transition-colors">Galeria</a>
-            <a href="#contact" class="mobile-link mt-8 px-8 py-4 bg-barber-primary text-black font-bold uppercase tracking-widest rounded-full">Agendar Agora</a>
+            <a href="{{ route('scheduling') }}" class="mobile-link mt-8 px-8 py-4 bg-barber-primary text-black font-bold uppercase tracking-widest rounded-full">Agendar Agora</a>
         </div>
     </header>
 
@@ -122,7 +122,7 @@
             
             <!-- Botão de Agendamento Principal - Pulsante -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <a href="#contact" class="btn-glow px-10 py-5 bg-gradient-to-r from-barber-primary to-barber-dark text-black text-lg font-bold uppercase tracking-widest rounded-full transition-all">
+                <a href="{{ route('scheduling') }}" class="btn-glow px-10 py-5 bg-gradient-to-r from-barber-primary to-barber-dark text-black text-lg font-bold uppercase tracking-widest rounded-full transition-all">
                     Agendar Meu Horário
                 </a>
             </div>
@@ -205,7 +205,7 @@
             </div>
             
             <div class="mt-16 text-center reveal">
-                <a href="#contact" class="inline-flex items-center gap-3 text-barber-primary hover:text-white transition-colors font-medium tracking-widest uppercase text-sm border-b border-barber-primary hover:border-white pb-1">
+                <a href="{{ route('scheduling') }}" class="inline-flex items-center gap-3 text-barber-primary hover:text-white transition-colors font-medium tracking-widest uppercase text-sm border-b border-barber-primary hover:border-white pb-1">
                     Agende agora e garanta seu horário
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -286,26 +286,102 @@
                 <a href="#" class="hidden md:inline-flex text-zinc-400 hover:text-barber-primary transition-colors tracking-widest uppercase text-sm font-medium">Ver Instagram</a>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Imagem Maior (Esquerda) -->
-                <div class="md:col-span-2 md:row-span-2 relative group overflow-hidden rounded-xl reveal">
-                    <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Corte 1" class="w-full h-full object-cover aspect-[4/3] md:aspect-auto transform transition-transform duration-700 group-hover:scale-105">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <!-- Row 1 -->
+                <div class="col-span-2 row-span-2 relative group overflow-hidden rounded-xl reveal">
+                    <img src="{{ asset('images/bb/corte-1.webp') }}" alt="Corte 1" class="w-full h-full object-cover aspect-square md:aspect-auto transform transition-transform duration-700 group-hover:scale-105">
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                        <span class="border border-barber-primary text-barber-primary px-6 py-2 uppercase tracking-widest text-sm rounded-full">Classic Fade</span>
+                        <span class="border border-barber-primary text-barber-primary px-4 md:px-6 py-2 uppercase tracking-widest text-xs md:text-sm rounded-full">Na Régua</span>
                     </div>
                 </div>
                 
-                <div class="relative group overflow-hidden rounded-xl reveal" style="transition-delay: 100ms;">
-                    <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Corte 2" class="w-full h-full object-cover aspect-square transform transition-transform duration-700 group-hover:scale-105">
-                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                        <span class="border border-barber-primary text-barber-primary px-6 py-2 uppercase tracking-widest text-sm rounded-full">Interior</span>
+                <div class="col-span-1 relative group overflow-hidden rounded-xl reveal" style="transition-delay: 100ms;">
+                    <img src="{{ asset('images/bb/corte-2.webp') }}" alt="Corte 2" class="w-full h-full object-cover aspect-square transform transition-transform duration-700 group-hover:scale-105">
+                </div>
+
+                <div class="col-span-1 relative group overflow-hidden rounded-xl reveal" style="transition-delay: 150ms;">
+                    <img src="{{ asset('images/bb/corte-3.webp') }}" alt="Corte 3" class="w-full h-full object-cover aspect-square transform transition-transform duration-700 group-hover:scale-105">
+                </div>
+
+                <!-- Row 2 -->
+                <div class="col-span-1 relative group overflow-hidden rounded-xl reveal" style="transition-delay: 200ms;">
+                    <img src="{{ asset('images/bb/corte-4.webp') }}" alt="Corte 4" class="w-full h-full object-cover aspect-square transform transition-transform duration-700 group-hover:scale-105">
+                </div>
+
+                <div class="col-span-1 relative group overflow-hidden rounded-xl reveal" style="transition-delay: 250ms;">
+                    <img src="{{ asset('images/bb/corte-5.webp') }}" alt="Corte 5" class="w-full h-full object-cover aspect-square transform transition-transform duration-700 group-hover:scale-105">
+                </div>
+                
+                <!-- Row 3 -->
+                <div class="col-span-2 relative group overflow-hidden rounded-xl reveal" style="transition-delay: 300ms;">
+                    <img src="{{ asset('images/bb/corte-6.webp') }}" alt="Corte 6" class="w-full h-[300px] object-cover transform transition-transform duration-700 group-hover:scale-105">
+                </div>
+                
+                <div class="col-span-1 relative group overflow-hidden rounded-xl reveal" style="transition-delay: 350ms;">
+                    <img src="{{ asset('images/bb/corte-7.webp') }}" alt="Corte 7" class="w-full h-[300px] object-cover transform transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="col-span-1 relative group overflow-hidden rounded-xl reveal" style="transition-delay: 400ms;">
+                    <img src="{{ asset('images/bb/corte-8.webp') }}" alt="Corte 8" class="w-full h-[300px] object-cover transform transition-transform duration-700 group-hover:scale-105">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Depoimentos -->
+    <section id="testimonials" class="py-32 relative bg-[#0a0a0a]">
+        <div class="max-w-7xl mx-auto px-6 md:px-12">
+            <div class="text-center mb-16 reveal">
+                <span class="text-barber-primary tracking-[0.2em] text-sm font-semibold uppercase">O que dizem sobre nós</span>
+                <h2 class="text-4xl md:text-5xl text-white font-serif mt-2">Avaliações</h2>
+                <div class="w-24 h-1 bg-barber-primary mx-auto mt-6"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Avaliação 1 -->
+                <div class="glass p-8 rounded-2xl border border-zinc-800 reveal transition-transform duration-300 hover:-translate-y-2">
+                    <div class="flex items-center gap-2 mb-4 text-barber-primary">
+                        @for($i=0; $i<5; $i++)
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        @endfor
+                    </div>
+                    <p class="text-zinc-400 italic mb-6">"Uma experiência inexplicável, ótimo atendimento e excelentes profissionais!!"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center text-xl font-bold text-white">T</div>
+                        <div>
+                            <h4 class="text-white font-semibold">Thiago Contemplacar</h4>
+                        </div>
                     </div>
                 </div>
 
-                <div class="relative group overflow-hidden rounded-xl reveal" style="transition-delay: 200ms;">
-                    <img src="https://images.unsplash.com/photo-1593702275687-f8b402bf1fb5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Corte 3" class="w-full h-full object-cover aspect-square transform transition-transform duration-700 group-hover:scale-105">
-                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                        <span class="border border-barber-primary text-barber-primary px-6 py-2 uppercase tracking-widest text-sm rounded-full">Beard Trim</span>
+                <!-- Avaliação 2 -->
+                <div class="glass p-8 rounded-2xl border border-zinc-800 reveal transition-transform duration-300 hover:-translate-y-2" style="transition-delay: 100ms;">
+                    <div class="flex items-center gap-2 mb-4 text-barber-primary">
+                        @for($i=0; $i<5; $i++)
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        @endfor
+                    </div>
+                    <p class="text-zinc-400 italic mb-6">"Top demais! Parabéns para o Nagai e Rafael. Muito top!🤩🙌🏻❤🙏🏼"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center text-xl font-bold text-white">E</div>
+                        <div>
+                            <h4 class="text-white font-semibold">Erikin Guedes</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Avaliação 3 -->
+                <div class="glass p-8 rounded-2xl border border-zinc-800 reveal transition-transform duration-300 hover:-translate-y-2" style="transition-delay: 200ms;">
+                    <div class="flex items-center gap-2 mb-4 text-barber-primary">
+                        @for($i=0; $i<5; $i++)
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        @endfor
+                    </div>
+                    <p class="text-zinc-400 italic mb-6">"Melhor barbearia de Para de Minas."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center text-xl font-bold text-white">M</div>
+                        <div>
+                            <h4 class="text-white font-semibold">Marcus Vinícius</h4>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -337,7 +413,7 @@
                                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </div>
                                 <div class="text-zinc-300">
-                                    Rua da Tradição, 123 - Centro, Barcelona - BA
+                                    Av. Padre José Viégas, 328 - Recanto da Lagoa, Pará de Minas - MG, 35661-738
                                 </div>
                             </div>
                             <div class="flex items-center gap-4">
@@ -352,9 +428,9 @@
 
                         <!-- Botão Gigante do WhatsApp -->
                         <div class="mt-12">
-                            <a href="https://wa.me/5571999999999" target="_blank" class="w-full sm:w-auto inline-flex justify-center items-center gap-3 px-8 py-5 bg-[#25D366] text-white font-bold uppercase tracking-widest rounded-full hover:bg-[#1ebd5a] transition-all shadow-[0_0_20px_rgba(37,211,102,0.3)] hover:shadow-[0_0_30px_rgba(37,211,102,0.5)] transform hover:-translate-y-1">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                Agendar via WhatsApp
+                            <a href="{{ route('scheduling') }}" class="w-full sm:w-auto inline-flex justify-center items-center gap-3 px-8 py-5 bg-barber-primary text-black font-bold uppercase tracking-widest rounded-full hover:bg-barber-accent transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] transform hover:-translate-y-1">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                Agendar Horário
                             </a>
                         </div>
                     </div>

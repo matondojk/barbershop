@@ -22,6 +22,7 @@ class Appointment extends Model
         'discount_amount',
         'change_amount',
         'commission_amount',
+        'manage_hash',
     ];
 
     public function customer()

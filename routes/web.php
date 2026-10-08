@@ -21,6 +21,8 @@ Route::get('/agendar', function () {
     return view('scheduling');
 })->name('scheduling');
 
+Route::get('/agendamento/{hash}', \App\Livewire\ManageAppointment::class)->name('appointment.manage');
+
 Route::middleware(['auth'])->prefix('painel')->group(function () {
     Route::get('/', DashboardOverview::class)->name('dashboard');
     Route::get('agenda', BarberAgenda::class)->name('agenda.index');
@@ -42,4 +44,7 @@ Route::middleware(['auth'])->prefix('painel')->group(function () {
 
     Route::get('clientes', CustomerList::class)->name('customers.index');
     Route::get('financeiro', \App\Livewire\FinancialDashboard::class)->name('financial.index');
+    
+    Route::get('whatsapp/novo', \App\Livewire\WhatsappCreate::class)->name('whatsapp.create');
+    Route::get('whatsapp', \App\Livewire\WhatsappManager::class)->name('whatsapp.index');
 });
