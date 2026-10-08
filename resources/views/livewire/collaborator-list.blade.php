@@ -67,7 +67,8 @@
                     <th class="p-5 font-medium">Atribuições</th>
                     <th class="p-5 font-medium">Expediente</th>
                     <th class="p-5 font-medium">Status</th>
-                    <th class="p-5 font-medium">Contato / Documento</th>
+                    <th class="p-5 font-medium">CPF</th>
+                    <th class="p-5 font-medium">WhatsApp</th>
                     <th class="p-5 font-medium text-right">Ações</th>
                 </tr>
             </thead>
@@ -116,18 +117,17 @@
                         @endif
                     </td>
                     <td class="p-5 text-zinc-400 text-sm">
-                        <div class="flex flex-col gap-1">
-                            @if($user->whatsapp)
-                                <span class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                    {{ $user->whatsapp }}
-                                </span>
-                            @endif
-                            <span class="flex items-center gap-2 text-zinc-500">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
-                                {{ preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $user->cpf) }}
+                        {{ preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $user->cpf) }}
+                    </td>
+                    <td class="p-5 text-zinc-400 text-sm">
+                        @if($user->whatsapp)
+                            <span class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                {{ $user->whatsapp }}
                             </span>
-                        </div>
+                        @else
+                            <span class="text-zinc-600">-</span>
+                        @endif
                     </td>
                     <td class="p-5 flex items-center justify-end gap-3">
                         <a wire:navigate href="{{ route('collaborators.edit', $user->id) }}" class="p-2 text-zinc-400 hover:text-barber-primary bg-zinc-800/50 hover:bg-zinc-800 rounded-lg transition-colors" title="Editar Colaborador">
