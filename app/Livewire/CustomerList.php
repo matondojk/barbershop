@@ -62,7 +62,9 @@ class CustomerList extends Component
 
     public function render()
     {
-        $query = Customer::query();
+        $query = Customer::query()->whereHas('appointments', function ($q) {
+            $q->where('status', 'completed');
+        });
 
         if (!empty($this->search)) {
             $query->where(function ($q) {
@@ -83,7 +85,9 @@ class CustomerList extends Component
         }
 
         return view('livewire.customer-list', [
-            'customers' => $query->withCount('appointments')->orderBy('id', 'desc')->paginate(10)
+            'customers' => $query->withCount(['appointments' => function ($q) {
+                $q->where('status', 'completed');
+            }])->orderBy('id', 'desc')->paginate(10)
         ])->layout('components.layouts.app');
     }
 }
