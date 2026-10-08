@@ -20,4 +20,6 @@ Route::middleware(['auth'])->prefix('dashboard')->group(function () {
     Route::get('services', \App\Livewire\ServiceList::class)->name('services.index');
     Route::get('services/create', \App\Livewire\ServiceForm::class)->name('services.create');
     Route::get('services/{service}/edit', \App\Livewire\ServiceForm::class)->name('services.edit');
+
+    Route::get('customers', \App\Livewire\CustomerList::class)->name('customers.index');
 });
