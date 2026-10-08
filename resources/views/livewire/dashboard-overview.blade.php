@@ -33,7 +33,11 @@
     @if($appointments->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-5">
             @foreach($appointments as $appt)
-                <div class="group relative bg-[#0a0a0a]/70 backdrop-blur-md border {{ $appt->status == 'scheduled' ? 'border-zinc-800 hover:border-barber-primary/50' : 'border-zinc-800 opacity-50' }} rounded-2xl p-5 flex flex-col justify-between gap-5 transition-all duration-300 overflow-hidden">
+                <div class="group relative bg-[#0a0a0a]/70 backdrop-blur-md border 
+                    {{ $appt->status === 'scheduled' ? 'border-zinc-800 hover:border-barber-primary/50' : '' }}
+                    {{ $appt->status === 'in_progress' ? 'border-barber-primary/50 shadow-[0_0_15px_rgba(237,179,41,0.1)]' : '' }}
+                    {{ in_array($appt->status, ['completed', 'rejected', 'canceled']) ? 'border-zinc-800 opacity-50' : '' }}
+                    rounded-2xl p-5 flex flex-col justify-between gap-5 transition-all duration-300 overflow-hidden">
                     
                     <!-- Glow Effect on Hover -->
                     <div class="hidden md:block absolute -inset-px bg-gradient-to-br from-barber-primary/0 via-barber-primary/10 to-barber-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>

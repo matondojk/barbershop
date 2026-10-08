@@ -72,5 +72,17 @@ class FortifyServiceProvider extends ServiceProvider
                 ($credentialId ?: $request->session()->getId()).'|'.$request->ip()
             );
         });
+
+        $this->app->singleton(
+            \Laravel\Fortify\Contracts\LogoutResponse::class,
+            function () {
+                return new class implements \Laravel\Fortify\Contracts\LogoutResponse {
+                    public function toResponse($request)
+                    {
+                        return redirect('/login');
+                    }
+                };
+            }
+        );
     }
 }
