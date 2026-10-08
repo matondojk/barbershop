@@ -15,90 +15,160 @@
             <form wire:submit="save" class="space-y-6">
                 
                 <div class="grid grid-cols-1 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Nome Completo</label>
-                        <input type="text" wire:model="name" required class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
-                        @error('name') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-                    </div>
+<div>
+    @section('header_title', $user_id ? 'Editar Colaborador' : 'Novo Colaborador')
+
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <h2 class="text-3xl text-white font-bold tracking-tight mb-2">
+                {{ $user_id ? 'Editar Colaborador' : 'Novo Colaborador' }}
+            </h2>
+            <p class="text-zinc-400">Preencha os dados abaixo para gerenciar o acesso.</p>
+        </div>
+        <a wire:navigate href="{{ route('collaborators.index') }}" class="px-6 py-2.5 rounded-xl border border-zinc-700 text-zinc-300 hover:bg-white/5 hover:text-white transition-all font-medium text-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Voltar
+        </a>
+    </div>
+
+    <div class="w-full max-w-4xl">
+        <div class="bg-[#0a0a0a]/70 backdrop-blur-xl border border-zinc-800/50 rounded-3xl p-8 shadow-2xl">
+            <form wire:submit="save" class="space-y-8">
+                
+                <!-- Dados Básicos -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-6 border-b border-zinc-800/50 pb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-barber-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        Dados Pessoais
+                    </h3>
                     
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">CPF</label>
-                        <input type="text" wire:model="cpf" required maxlength="14" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
-                        <p class="text-xs text-zinc-500 mt-2">A senha inicial será os 6 primeiros dígitos do CPF.</p>
-                        @error('cpf') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Nome Completo</label>
+                            <input type="text" wire:model="name" required class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium">
+                            @error('name') <span class="text-red-400 text-sm mt-1.5 block">{{ $message }}</span> @enderror
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">CPF</label>
+                            <input type="text" wire:model="cpf" required maxlength="14" placeholder="000.000.000-00" oninput="maskCpfField(this)" class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium">
+                            @if(!$user_id)
+                                <p class="text-[11px] text-zinc-500 mt-2 font-medium">A senha inicial será os 6 primeiros dígitos do CPF.</p>
+                            @endif
+                            @error('cpf') <span class="text-red-400 text-sm mt-1.5 block">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">WhatsApp</label>
+                            <input type="text" wire:model="whatsapp" maxlength="15" placeholder="(00) 00000-0000" oninput="maskWhatsappField(this)" class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium">
+                            @error('whatsapp') <span class="text-red-400 text-sm mt-1.5 block">{{ $message }}</span> @enderror
+                        </div>
                     </div>
-                    
+                </div>
+
+                <!-- Atribuições & Foto -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Atribuições (Selecione um ou mais)</label>
-                        <div class="flex flex-col gap-3">
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" wire:model="roles" value="barber" class="w-5 h-5 rounded border-zinc-800 bg-[#0a0a0a]/70 backdrop-blur-md text-barber-primary focus:ring-barber-primary focus:ring-offset-[#111]">
-                                <span class="text-white group-hover:text-barber-primary transition-colors">Barbeiro</span>
+                        <h3 class="text-lg font-bold text-white mb-6 border-b border-zinc-800/50 pb-3 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-barber-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            Permissões de Acesso
+                        </h3>
+                        <div class="flex flex-col gap-4">
+                            <label class="flex items-center gap-4 cursor-pointer group p-3 rounded-xl hover:bg-white/5 border border-transparent hover:border-zinc-800/50 transition-all">
+                                <input type="checkbox" wire:model="roles" value="barber" class="w-5 h-5 rounded border border-zinc-600 bg-zinc-900/50 checked:bg-barber-primary checked:border-barber-primary transition-all focus:ring-0 focus:ring-offset-0">
+                                <div>
+                                    <span class="text-white font-medium block">Barbeiro</span>
+                                    <span class="text-xs text-zinc-500">Pode receber agendamentos.</span>
+                                </div>
                             </label>
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" wire:model="roles" value="admin" class="w-5 h-5 rounded border-zinc-800 bg-[#0a0a0a]/70 backdrop-blur-md text-barber-primary focus:ring-barber-primary focus:ring-offset-[#111]">
-                                <span class="text-white group-hover:text-barber-primary transition-colors">Administrador</span>
-                            </label>
-                            <label class="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" wire:model="roles" value="financial" class="w-5 h-5 rounded border-zinc-800 bg-[#0a0a0a]/70 backdrop-blur-md text-barber-primary focus:ring-barber-primary focus:ring-offset-[#111]">
-                                <span class="text-white group-hover:text-barber-primary transition-colors">Financeiro</span>
+                            <label class="flex items-center gap-4 cursor-pointer group p-3 rounded-xl hover:bg-white/5 border border-transparent hover:border-zinc-800/50 transition-all">
+                                <input type="checkbox" wire:model="roles" value="admin" class="w-5 h-5 rounded border border-zinc-600 bg-zinc-900/50 checked:bg-barber-primary checked:border-barber-primary transition-all focus:ring-0 focus:ring-offset-0">
+                                <div>
+                                    <span class="text-white font-medium block">Administrador</span>
+                                    <span class="text-xs text-zinc-500">Acesso total às configurações.</span>
+                                </div>
                             </label>
                         </div>
-                        @error('roles') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
+                        @error('roles') <span class="text-red-400 text-sm mt-1.5 block">{{ $message }}</span> @enderror
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-zinc-800">
                     <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Status</label>
-                        <select wire:model="is_active" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary appearance-none">
-                            <option value="1">Ativo (Pode receber agenda)</option>
-                            <option value="0">Inativo</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Início Expediente</label>
-                        <input type="time" wire:model="work_start_time" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary custom-calendar-icon">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Fim Expediente</label>
-                        <input type="time" wire:model="work_end_time" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary custom-calendar-icon">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-zinc-800">
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Regra de Comissão</label>
-                        <select wire:model="commission_type" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary appearance-none">
-                            <option value="percentage">Porcentagem (%)</option>
-                            <option value="fixed">Valor Fixo (R$)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Valor/Porcentagem</label>
-                        <input type="text" wire:model="commission_value" onkeyup="maskCurrency(this)" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
-                        @error('commission_value') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-
-                <div class="pt-6 border-t border-zinc-800">
-                    <label class="block text-sm font-medium text-zinc-400 mb-2">Foto de Perfil</label>
-                    <input type="file" wire:model="photo" accept="image/*" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-zinc-800 file:text-barber-primary hover:file:bg-zinc-700 transition-colors">
-                    @error('photo') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-                    
-                    <div wire:loading wire:target="photo" class="text-barber-primary text-sm mt-2">Carregando imagem...</div>
-                    
-                    @if ($photo)
-                        <div class="mt-4">
-                            <img src="{{ $photo->temporaryUrl() }}" class="w-24 h-24 rounded-full object-cover border-2 border-barber-primary">
+                        <h3 class="text-lg font-bold text-white mb-6 border-b border-zinc-800/50 pb-3 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-barber-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            Foto de Perfil
+                        </h3>
+                        
+                        <div class="flex items-center gap-6">
+                            <div class="relative w-24 h-24 rounded-full border-2 border-dashed border-zinc-700 flex items-center justify-center overflow-hidden bg-zinc-900/50">
+                                @if ($photo)
+                                    <img src="{{ $photo->temporaryUrl() }}" class="w-full h-full object-cover">
+                                @else
+                                    <svg class="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                @endif
+                                <div wire:loading wire:target="photo" class="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
+                                    <svg class="animate-spin h-5 w-5 text-barber-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <input type="file" wire:model="photo" accept="image/*" class="w-full text-sm text-zinc-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-zinc-800 file:text-white hover:file:bg-zinc-700 transition-colors file:cursor-pointer">
+                                <p class="text-[11px] text-zinc-500 mt-2 font-medium">PNG, JPG até 2MB.</p>
+                                @error('photo') <span class="text-red-400 text-sm mt-1.5 block">{{ $message }}</span> @enderror
+                            </div>
                         </div>
-                    @endif
+                    </div>
                 </div>
 
-                <div class="pt-6 border-t border-zinc-800 flex justify-end">
-                    <button type="submit" class="px-8 py-3 bg-barber-primary text-black font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-barber-light transition-all hover:shadow-[0_0_15px_rgba(237,179,41,0.3)]">
-                        <span wire:loading.remove wire:target="save">{{ $user_id ? 'Salvar Alterações' : 'Salvar Colaborador' }}</span>
-                        <span wire:loading wire:target="save">Salvando...</span>
+                <!-- Regras de Agendamento e Comissão -->
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-6 border-b border-zinc-800/50 pb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-barber-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Financeiro & Expediente
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        
+                        <div class="lg:col-span-2">
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Status da Conta</label>
+                            <select wire:model="is_active" class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium">
+                                <option value="1">Ativo (Pode acessar e receber agenda)</option>
+                                <option value="0">Inativo (Bloqueado)</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Início Expediente</label>
+                            <input type="time" wire:model="work_start_time" class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Fim Expediente</label>
+                            <input type="time" wire:model="work_end_time" class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium">
+                        </div>
+
+                        <div class="lg:col-span-2">
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Regra de Comissão</label>
+                            <select wire:model="commission_type" class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium">
+                                <option value="percentage">Porcentagem (%)</option>
+                                <option value="fixed">Valor Fixo (R$)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="lg:col-span-2">
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Valor/Porcentagem</label>
+                            <input type="text" wire:model="commission_value" onkeyup="maskCurrency(this)" class="w-full bg-zinc-900/60 border border-zinc-700/50 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:bg-zinc-900/80 focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-all text-sm font-medium text-right">
+                            @error('commission_value') <span class="text-red-400 text-sm mt-1.5 block">{{ $message }}</span> @enderror
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-zinc-800/50 flex justify-end">
+                    <button type="submit" class="w-full md:w-auto px-10 py-4 bg-barber-primary text-black font-extrabold uppercase tracking-widest text-sm rounded-xl hover:bg-barber-light transition-all shadow-[0_0_15px_rgba(237,179,41,0.15)] hover:shadow-[0_0_25px_rgba(237,179,41,0.3)] active:scale-95">
+                        <span wire:loading.remove wire:target="save">{{ $user_id ? 'Salvar Alterações' : 'Cadastrar Colaborador' }}</span>
+                        <span wire:loading wire:target="save" class="flex items-center gap-2">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            Processando...
+                        </span>
                     </button>
                 </div>
             </form>
@@ -113,6 +183,34 @@
             value = value.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
             value = value.replace(/(\d)(\d{3}),/g, "$1.$2,");
             input.value = value;
+        }
+
+        function maskWhatsappField(input) {
+            let v = input.value.replace(/\D/g, "");
+            v = v.substring(0, 11);
+            if (v.length > 10) {
+                v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, "($1) $2-$3");
+            } else if (v.length > 5) {
+                v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, "($1) $2-$3");
+            } else if (v.length > 2) {
+                v = v.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
+            } else if (v.length > 0) {
+                v = v.replace(/^(\d{0,2})/, "($1");
+            }
+            input.value = v;
+        }
+
+        function maskCpfField(input) {
+            let v = input.value.replace(/\D/g, "");
+            v = v.substring(0, 11);
+            if (v.length > 9) {
+                v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, "$1.$2.$3-$4");
+            } else if (v.length > 6) {
+                v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+            } else if (v.length > 3) {
+                v = v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+            }
+            input.value = v;
         }
     </script>
 </div>

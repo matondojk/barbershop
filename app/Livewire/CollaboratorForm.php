@@ -15,6 +15,7 @@ class CollaboratorForm extends Component
     public $user_id;
     public $name;
     public $cpf;
+    public $whatsapp;
     public $roles = [];
     public $photo;
     public $is_active = true;
@@ -32,6 +33,11 @@ class CollaboratorForm extends Component
             $this->user_id = $userModel->id;
             $this->name = $userModel->name;
             $this->cpf = preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $userModel->cpf);
+            
+            if ($userModel->whatsapp) {
+                $this->whatsapp = preg_replace('/(\d{2})(\d{5})(\d{4})/', '($1) $2-$3', $userModel->whatsapp);
+            }
+
             $this->roles = $userModel->roles ?? [];
             $this->is_active = $userModel->is_active;
             $this->work_start_time = substr($userModel->work_start_time, 0, 5);
@@ -46,6 +52,7 @@ class CollaboratorForm extends Component
     public function save()
     {
         $cpfLimpo = preg_replace('/[^0-9]/', '', $this->cpf);
+        $zapLimpo = preg_replace('/[^0-9]/', '', $this->whatsapp);
         $cleanCommission = str_replace(['.', ','], ['', '.'], $this->commission_value);
 
         $this->validate([
@@ -55,6 +62,7 @@ class CollaboratorForm extends Component
                 'string',
                 Rule::unique('users', 'cpf')->ignore($this->user_id),
             ],
+            'whatsapp' => 'nullable|string|max:20',
             'roles' => 'required|array|min:1',
             'photo' => 'nullable|image|max:2048',
             'is_active' => 'boolean',
@@ -78,6 +86,7 @@ class CollaboratorForm extends Component
             $user = User::findOrFail($this->user_id);
             $user->name = $this->name;
             $user->cpf = $cpfLimpo;
+            $user->whatsapp = $zapLimpo;
             $user->roles = $this->roles;
             $user->is_active = $this->is_active;
             $user->work_start_time = $this->work_start_time;
@@ -97,6 +106,7 @@ class CollaboratorForm extends Component
             User::create([
                 'name' => $this->name,
                 'cpf' => $cpfLimpo,
+                'whatsapp' => $zapLimpo,
                 'password' => Hash::make($senha),
                 'roles' => $this->roles,
                 'photo_path' => $photoPath,
