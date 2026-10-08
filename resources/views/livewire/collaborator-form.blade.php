@@ -1,5 +1,4 @@
 <div>
-    @section('header_title', 'Equipe')
 
     <div class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -157,7 +156,8 @@
 
                 <div class="pt-6 md:pt-8 border-t border-zinc-800/50 flex justify-end">
                     <button type="submit" class="w-full md:w-auto px-8 md:px-10 py-3.5 md:py-4 bg-barber-primary text-black font-extrabold uppercase tracking-widest text-sm rounded-xl hover:bg-barber-light transition-all shadow-[0_0_15px_rgba(237,179,41,0.15)] hover:shadow-[0_0_25px_rgba(237,179,41,0.3)] active:scale-95">
-                        <span wire:loading.remove wire:target="save">{{ $user_id ? 'Salvar Alterações' : 'Cadastrar Colaborador' }}</span>
+                        <span wire:loading.remove wire:target="save" class="hidden md:inline">{{ $user_id ? 'Salvar Alterações' : 'Cadastrar Colaborador' }}</span>
+                        <span wire:loading.remove wire:target="save" class="md:hidden">{{ $user_id ? 'Salvar' : 'Cadastrar' }}</span>
                         <span wire:loading wire:target="save" class="flex items-center justify-center gap-2">
                             <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             Processando...

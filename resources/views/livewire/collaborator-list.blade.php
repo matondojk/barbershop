@@ -1,10 +1,9 @@
 <div>
-    @section('header_title', 'Equipe & Colaboradores')
-
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
         <h2 class="text-2xl text-white font-serif">Membros da Equipe</h2>
         <a href="{{ route('collaborators.create') }}" class="px-6 py-3 bg-barber-primary text-black font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-barber-light transition-all hover:shadow-[0_0_15px_rgba(237,179,41,0.3)] w-full md:w-auto text-center">
-            + Novo Colaborador
+            <span class="md:hidden">+ Novo</span>
+            <span class="hidden md:inline">+ Novo Colaborador</span>
         </a>
     </div>
 
