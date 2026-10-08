@@ -214,10 +214,25 @@ class SchedulingWizard extends Component
             'status' => 'scheduled',
         ]);
 
-        // Send Notification to Barber
         $barber = User::find($this->barber_id);
+        $dateFormatted = \Carbon\Carbon::parse($this->appointment_date)->format('d/m/Y');
+        $timeFormatted = substr($this->start_time, 0, 5);
+        $serviceName = $service->name;
+
+        // WhatsApp to Customer
+        if (!empty($customer->whatsapp)) {
+            $customerMsg = "Olá {$customer->name}! Seu agendamento para *{$serviceName}* na Barbearia Barcelona está confirmado!\n\n📅 Data: {$dateFormatted}\n⏰ Horário: {$timeFormatted}\n💈 Barbeiro: " . ($barber ? $barber->name : 'Nossa equipe') . "\n\nTe esperamos lá!";
+            \App\Jobs\SendWhatsAppMessage::dispatch($customer->whatsapp, $customerMsg);
+        }
+
+        // Send Notification & WhatsApp to Barber
         if ($barber) {
             $barber->notify(new \App\Notifications\NewAppointmentNotification($appointment));
+            
+            if (!empty($barber->whatsapp)) {
+                $barberMsg = "Novo agendamento! 💈\n\n👤 Cliente: {$customer->name}\n✂️ Serviço: {$serviceName}\n📅 Data: {$dateFormatted}\n⏰ Horário: {$timeFormatted}";
+                \App\Jobs\SendWhatsAppMessage::dispatch($barber->whatsapp, $barberMsg);
+            }
         }
 
         // Send Notification to Admins (excluding barber if barber is admin to avoid duplicates)
