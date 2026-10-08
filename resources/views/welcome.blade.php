@@ -68,7 +68,7 @@
 
             <!-- CTA Desktop -->
             <div class="hidden md:block">
-                <a href="{{ route('scheduling') }}" class="px-7 py-2.5 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors">
+                <a href="{{ route('scheduling') }}" class="px-7 py-2.5 bg-barber-primary text-black text-xs font-bold uppercase tracking-widest rounded-full hover:brightness-110 transition-all shadow-[0_0_10px_rgba(237,179,41,0.2)] hover:shadow-[0_0_15px_rgba(237,179,41,0.4)]">
                     Agendar
                 </a>
             </div>
@@ -92,7 +92,7 @@
             <a href="#services" class="mobile-link text-2xl font-serif text-white hover:text-white/70 transition-colors">Serviços</a>
             <a href="#about" class="mobile-link text-2xl font-serif text-white hover:text-white/70 transition-colors">A Barbearia</a>
             <a href="#gallery" class="mobile-link text-2xl font-serif text-white hover:text-white/70 transition-colors">Galeria</a>
-            <a href="{{ route('scheduling') }}" class="mobile-link mt-8 px-10 py-4 bg-white text-black text-sm font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors">Agendar Agora</a>
+            <a href="{{ route('scheduling') }}" class="mobile-link mt-8 px-10 py-4 bg-barber-primary text-black text-sm font-bold uppercase tracking-widest rounded-full hover:brightness-110 transition-all shadow-[0_0_15px_rgba(237,179,41,0.3)]">Agendar Agora</a>
         </div>
     </header>
 
@@ -119,10 +119,10 @@
                 </p>
                 
                 <div class="flex flex-col sm:flex-row items-center gap-6">
-                    <a href="{{ route('scheduling') }}" class="w-full sm:w-auto px-8 py-4 bg-white text-black text-sm font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors text-center">
+                    <a href="{{ route('scheduling') }}" class="w-full sm:w-auto px-8 py-4 bg-barber-primary text-black text-sm font-bold uppercase tracking-widest rounded-full hover:brightness-110 transition-all shadow-[0_0_15px_rgba(237,179,41,0.3)] hover:shadow-[0_0_25px_rgba(237,179,41,0.5)] transform hover:-translate-y-1 text-center">
                         Agendar Horário
                     </a>
-                    <a href="#services" class="w-full sm:w-auto px-8 py-4 border border-zinc-700 text-white text-sm font-bold uppercase tracking-widest hover:border-white transition-colors text-center">
+                    <a href="#services" class="w-full sm:w-auto px-8 py-4 border border-barber-primary text-barber-primary text-sm font-bold uppercase tracking-widest rounded-full hover:bg-barber-primary hover:text-black transition-all transform hover:-translate-y-1 text-center">
                         Nossos Serviços
                     </a>
                 </div>
@@ -143,15 +143,14 @@
                 </p>
             </div>
 
-            @php
-                $services = \App\Models\Service::where('is_active', true)->get();
-            @endphp
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
                 @forelse($services as $index => $service)
                     <div class="group cursor-default reveal" style="transition-delay: {{ ($index % 4) * 50 }}ms;">
                         <div class="flex justify-between items-baseline mb-3">
-                            <h3 class="text-xl text-white font-medium group-hover:text-barber-primary transition-colors">{{ $service->name }}</h3>
+                            <h3 class="text-xl text-white font-medium group-hover:text-barber-primary transition-colors">
+                                {{ $service->name }}
+                                <span class="text-xs text-barber-primary/70 ml-2 font-sans tracking-widest">{{ $service->duration_minutes }} MIN</span>
+                            </h3>
                             <div class="flex-grow border-b border-dotted border-zinc-700 mx-4 relative top-[-6px]"></div>
                             <span class="text-xl text-white font-serif">R$ {{ number_format($service->price, 0, ',', '.') }}</span>
                         </div>
@@ -182,7 +181,7 @@
                 <!-- Imagem -->
                 <div class="relative reveal">
                     <div class="absolute inset-0 bg-barber-primary/20 transform rotate-3 rounded-2xl"></div>
-                    <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Ambiente Barbearia" class="relative rounded-2xl shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 w-full h-[600px] object-cover">
+                    <img src="{{ asset('images/bb/corte-3.webp') }}" alt="Ambiente Barbearia" class="relative rounded-2xl shadow-2xl transition-all duration-700 w-full h-[600px] object-cover">
                     
                     <!-- Box flutuante -->
                     <div class="absolute -bottom-10 -right-10 bg-[#0a0a0a]/70 backdrop-blur-md border border-barber-primary/30 p-8 rounded-xl shadow-2xl hidden md:block">
