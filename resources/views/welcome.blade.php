@@ -51,162 +51,122 @@
 <body class="bg-[#0a0a0a]/70 backdrop-blur-md text-zinc-300 antialiased selection:bg-barber-primary selection:text-black overflow-x-hidden">
 
     <!-- Header / Navbar -->
-    <header id="header" class="fixed w-full top-0 z-50 transition-all duration-500 py-4">
-        <div class="max-w-7xl mx-auto px-6 md:px-12">
-            <div class="flex justify-between items-center bg-[#111]/70 backdrop-blur-md/80 backdrop-blur-md rounded-full border border-zinc-800/50 px-6 py-3 shadow-2xl">
-                <!-- Logo -->
-                <a href="#" class="flex items-center gap-3 group">
-                    <img src="{{ asset('images/logo.png') }}" alt="Barbearia Barcelona" class="h-10 w-auto object-contain transition-transform duration-500 group-hover:scale-110">
+    <header id="header" class="fixed w-full top-0 z-50 transition-all duration-300 border-b border-transparent bg-transparent">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center group">
+                <img src="{{ asset('images/logo.png') }}" alt="Barbearia Barcelona" class="h-8 w-auto object-contain transition-opacity duration-300 group-hover:opacity-80">
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-10">
+                <a href="#home" class="text-sm tracking-[0.1em] text-white/70 hover:text-white transition-colors uppercase font-medium">Início</a>
+                <a href="#services" class="text-sm tracking-[0.1em] text-white/70 hover:text-white transition-colors uppercase font-medium">Serviços</a>
+                <a href="#about" class="text-sm tracking-[0.1em] text-white/70 hover:text-white transition-colors uppercase font-medium">A Barbearia</a>
+                <a href="#gallery" class="text-sm tracking-[0.1em] text-white/70 hover:text-white transition-colors uppercase font-medium">Galeria</a>
+            </nav>
+
+            <!-- CTA Desktop -->
+            <div class="hidden md:block">
+                <a href="{{ route('scheduling') }}" class="px-7 py-2.5 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors">
+                    Agendar
                 </a>
-
-                <!-- Desktop Nav -->
-                <nav class="hidden md:flex items-center gap-8">
-                    <a href="#home" class="text-sm font-medium uppercase tracking-widest text-zinc-400 hover:text-barber-primary transition-colors">Início</a>
-                    <a href="#services" class="text-sm font-medium uppercase tracking-widest text-zinc-400 hover:text-barber-primary transition-colors">Serviços</a>
-                    <a href="#about" class="text-sm font-medium uppercase tracking-widest text-zinc-400 hover:text-barber-primary transition-colors">A Barbearia</a>
-                    <a href="#gallery" class="text-sm font-medium uppercase tracking-widest text-zinc-400 hover:text-barber-primary transition-colors">Galeria</a>
-                </nav>
-
-                <!-- CTA Desktop -->
-                <div class="hidden md:block">
-                    <a href="{{ route('scheduling') }}" class="px-6 py-2.5 bg-barber-primary text-black text-sm font-bold uppercase tracking-wider rounded-full hover:bg-barber-light transition-all shadow-[0_0_15px_rgba(237,179,41,0.3)] hover:shadow-[0_0_25px_rgba(237,179,41,0.6)]">
-                        Agendar
-                    </a>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="md:hidden text-barber-primary focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
-                    </svg>
-                </button>
             </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+                <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"/>
+                </svg>
+            </button>
         </div>
 
         <!-- Mobile Nav (Dropdown) -->
         <div id="mobile-menu" class="fixed inset-0 bg-black/95 z-40 hidden flex-col items-center justify-center space-y-8 backdrop-blur-lg">
-            <button id="close-menu-btn" class="absolute top-10 right-10 text-zinc-400 hover:text-white">
+            <button id="close-menu-btn" class="absolute top-8 right-8 text-white/70 hover:text-white">
                 <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
-            <a href="#home" class="mobile-link text-2xl font-serif text-white hover:text-barber-primary transition-colors">Início</a>
-            <a href="#services" class="mobile-link text-2xl font-serif text-white hover:text-barber-primary transition-colors">Serviços</a>
-            <a href="#about" class="mobile-link text-2xl font-serif text-white hover:text-barber-primary transition-colors">A Barbearia</a>
-            <a href="#gallery" class="mobile-link text-2xl font-serif text-white hover:text-barber-primary transition-colors">Galeria</a>
-            <a href="{{ route('scheduling') }}" class="mobile-link mt-8 px-8 py-4 bg-barber-primary text-black font-bold uppercase tracking-widest rounded-full">Agendar Agora</a>
+            <a href="#home" class="mobile-link text-2xl font-serif text-white hover:text-white/70 transition-colors">Início</a>
+            <a href="#services" class="mobile-link text-2xl font-serif text-white hover:text-white/70 transition-colors">Serviços</a>
+            <a href="#about" class="mobile-link text-2xl font-serif text-white hover:text-white/70 transition-colors">A Barbearia</a>
+            <a href="#gallery" class="mobile-link text-2xl font-serif text-white hover:text-white/70 transition-colors">Galeria</a>
+            <a href="{{ route('scheduling') }}" class="mobile-link mt-8 px-10 py-4 bg-white text-black text-sm font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors">Agendar Agora</a>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="home" class="relative min-h-screen flex items-center justify-start overflow-hidden pt-20">
         <!-- Background elements -->
-        <div class="absolute inset-0 z-0">
-            <!-- Imagem escura e profissional com alto contraste -->
-            <img src="https://images.unsplash.com/photo-1593702295094-aea22597af65?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Barbearia Fundo" class="w-full h-full object-cover opacity-40">
-            <!-- Gradiente para escurecer a base e dar foco no texto -->
-            <div class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/50 via-[#0a0a0a]/70 to-[#0a0a0a]"></div>
-            <!-- Detalhe de luz dourada radial -->
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(237,179,41,0.08)_0,transparent_50%)]"></div>
+        <div class="absolute inset-0 z-0 bg-black">
+            <img src="{{ asset('images/bb/corte-1.webp') }}" alt="Barbearia Fundo" class="w-full h-full object-cover opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
         </div>
 
-        <div class="relative z-10 text-center px-4 w-full max-w-5xl mx-auto mt-20 reveal">
-            <span class="block text-barber-primary tracking-[0.3em] text-sm md:text-base font-semibold uppercase mb-4">A Experiência Definitiva</span>
-            <h1 class="text-5xl md:text-8xl text-white font-serif mb-6 leading-tight drop-shadow-2xl">
-                Cortes de <br>
-                <span class="italic font-light text-transparent bg-clip-text bg-gradient-to-r from-barber-light via-barber-primary to-barber-dark">Alto Padrão</span>
-            </h1>
-            <p class="text-lg md:text-xl text-zinc-400 mb-12 max-w-2xl mx-auto font-light">
-                Para o homem que não abre mão de um visual impecável. Muito mais que uma barbearia, um clube exclusivo de estilo e sofisticação.
-            </p>
-            
-            <!-- Botão de Agendamento Principal - Pulsante -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
-                <a href="{{ route('scheduling') }}" class="btn-glow px-10 py-5 bg-gradient-to-r from-barber-primary to-barber-dark text-black text-lg font-bold uppercase tracking-widest rounded-full transition-all">
-                    Agendar Meu Horário
-                </a>
+        <div class="relative z-10 px-6 md:px-12 w-full max-w-7xl mx-auto reveal">
+            <div class="max-w-2xl">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-px bg-barber-primary"></div>
+                    <span class="text-barber-primary tracking-[0.2em] text-sm font-medium uppercase">Tradição & Estilo</span>
+                </div>
+                <h1 class="text-5xl md:text-7xl text-white font-serif mb-6 leading-[1.1]">
+                    Onde a excelência encontra a sua imagem.
+                </h1>
+                <p class="text-lg md:text-xl text-zinc-400 mb-12 font-light leading-relaxed max-w-xl">
+                    Mais do que um simples corte de cabelo. Proporcionamos uma experiência de cuidado pessoal focada nos detalhes, conforto e exclusividade.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center gap-6">
+                    <a href="{{ route('scheduling') }}" class="w-full sm:w-auto px-8 py-4 bg-white text-black text-sm font-bold uppercase tracking-widest hover:bg-zinc-200 transition-colors text-center">
+                        Agendar Horário
+                    </a>
+                    <a href="#services" class="w-full sm:w-auto px-8 py-4 border border-zinc-700 text-white text-sm font-bold uppercase tracking-widest hover:border-white transition-colors text-center">
+                        Nossos Serviços
+                    </a>
+                </div>
             </div>
-        </div>
-
-        <!-- Scroll Down Indicator -->
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce z-10">
-            <span class="text-xs text-zinc-500 uppercase tracking-widest mb-2">Deslize</span>
-            <svg class="w-5 h-5 text-barber-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
         </div>
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-32 relative bg-[#0a0a0a]/70 backdrop-blur-md">
-        <!-- Linha divisória de luz -->
-        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-barber-primary/30 to-transparent"></div>
-
+    <section id="services" class="py-32 relative bg-[#0a0a0a]">
         <div class="max-w-7xl mx-auto px-6 md:px-12">
-            <div class="text-center mb-20 reveal">
-                <span class="text-barber-primary tracking-[0.2em] text-sm font-semibold uppercase">Menu de</span>
-                <h2 class="text-4xl md:text-6xl text-white font-serif mt-2">Serviços Premium</h2>
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8 reveal">
+                <div>
+                    <span class="text-barber-primary tracking-[0.2em] text-sm uppercase block mb-3">O que oferecemos</span>
+                    <h2 class="text-4xl md:text-5xl text-white font-serif">Nossos Serviços</h2>
+                </div>
+                <p class="text-zinc-400 max-w-md text-sm md:text-base font-light">
+                    Trabalhamos com produtos premium e profissionais altamente qualificados para garantir o melhor resultado.
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Card 1 -->
-                <div class="glass rounded-2xl p-10 group hover:-translate-y-2 transition-all duration-500 hover:border-barber-primary/50 relative overflow-hidden reveal">
-                    <div class="absolute inset-0 bg-gradient-to-br from-barber-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10">
-                        <div class="w-14 h-14 border border-barber-primary/30 rounded-full flex items-center justify-center mb-8 text-barber-primary group-hover:bg-barber-primary group-hover:text-black transition-colors duration-500">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/></svg>
-                        </div>
-                        <div class="flex justify-between items-baseline mb-4 border-b border-zinc-800 pb-4">
-                            <h3 class="text-2xl text-white font-serif">Corte Executivo</h3>
-                            <span class="text-xl font-medium text-barber-primary">R$ 60</span>
-                        </div>
-                        <p class="text-zinc-400 text-sm leading-relaxed">
-                            Visagismo, lavagem relaxante, corte com técnicas avançadas (tesoura ou fade) e finalização com pomada importada.
-                        </p>
-                    </div>
-                </div>
+            @php
+                $services = \App\Models\Service::where('is_active', true)->get();
+            @endphp
 
-                <!-- Card 2 -->
-                <div class="glass rounded-2xl p-10 group hover:-translate-y-2 transition-all duration-500 hover:border-barber-primary/50 relative overflow-hidden reveal" style="transition-delay: 100ms;">
-                    <div class="absolute inset-0 bg-gradient-to-br from-barber-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10">
-                        <div class="w-14 h-14 border border-barber-primary/30 rounded-full flex items-center justify-center mb-8 text-barber-primary group-hover:bg-barber-primary group-hover:text-black transition-colors duration-500">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 14.321V21h12v-6.679M9 10V3m6 7V3m-9 7h12a2 2 0 012 2v2H4v-2a2 2 0 012-2z"/></svg>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+                @forelse($services as $index => $service)
+                    <div class="group cursor-default reveal" style="transition-delay: {{ ($index % 4) * 50 }}ms;">
+                        <div class="flex justify-between items-baseline mb-3">
+                            <h3 class="text-xl text-white font-medium group-hover:text-barber-primary transition-colors">{{ $service->name }}</h3>
+                            <div class="flex-grow border-b border-dotted border-zinc-700 mx-4 relative top-[-6px]"></div>
+                            <span class="text-xl text-white font-serif">R$ {{ number_format($service->price, 0, ',', '.') }}</span>
                         </div>
-                        <div class="flex justify-between items-baseline mb-4 border-b border-zinc-800 pb-4">
-                            <h3 class="text-2xl text-white font-serif">Barba Clássica</h3>
-                            <span class="text-xl font-medium text-barber-primary">R$ 50</span>
-                        </div>
-                        <p class="text-zinc-400 text-sm leading-relaxed">
-                            Ritual tradicional: toalha quente, espumas aromáticas, navalha e hidratação com óleos essenciais para uma pele perfeita.
-                        </p>
+                        @if($service->description)
+                            <p class="text-zinc-500 text-sm leading-relaxed pr-16 font-light">{{ $service->description }}</p>
+                        @endif
                     </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="glass rounded-2xl p-10 group hover:-translate-y-2 transition-all duration-500 hover:border-barber-primary/50 relative overflow-hidden reveal" style="transition-delay: 200ms;">
-                    <div class="absolute inset-0 bg-gradient-to-br from-barber-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative z-10">
-                        <!-- Glow label -->
-                        <div class="absolute top-0 right-0 bg-barber-primary text-black text-xs font-bold px-3 py-1 uppercase tracking-widest rounded-bl-lg">Mais Pedido</div>
-                        
-                        <div class="w-14 h-14 border border-barber-primary/30 rounded-full flex items-center justify-center mb-8 text-barber-primary group-hover:bg-barber-primary group-hover:text-black transition-colors duration-500">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                        </div>
-                        <div class="flex justify-between items-baseline mb-4 border-b border-zinc-800 pb-4">
-                            <h3 class="text-2xl text-white font-serif">O Combo</h3>
-                            <span class="text-xl font-medium text-barber-primary">R$ 100</span>
-                        </div>
-                        <p class="text-zinc-400 text-sm leading-relaxed">
-                            A transformação completa. Corte impecável alinhado com a barboterapia, garantindo o máximo de relaxamento e estilo.
-                        </p>
-                    </div>
-                </div>
+                @empty
+                    <div class="col-span-full text-zinc-500 text-center py-10">Nenhum serviço cadastrado no momento.</div>
+                @endforelse
             </div>
             
-            <div class="mt-16 text-center reveal">
-                <a href="{{ route('scheduling') }}" class="inline-flex items-center gap-3 text-barber-primary hover:text-white transition-colors font-medium tracking-widest uppercase text-sm border-b border-barber-primary hover:border-white pb-1">
-                    Agende agora e garanta seu horário
+            <div class="mt-20 text-center reveal">
+                <a href="{{ route('scheduling') }}" class="inline-flex items-center gap-3 text-white hover:text-barber-primary transition-colors font-medium tracking-widest uppercase text-xs pb-1 border-b border-white hover:border-barber-primary">
+                    Ver disponibilidade e agendar
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
@@ -476,8 +436,19 @@
         closeBtn.addEventListener('click', toggleMenu);
         mobileLinks.forEach(link => link.addEventListener('click', toggleMenu));
 
-        // Animação no Scroll (Reveal Elements)
-        function reveal() {
+        // Animação no Scroll (Reveal Elements) & Header Background
+        function onScroll() {
+            // Header
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('bg-black/95', 'backdrop-blur-md', 'border-zinc-800');
+                header.classList.remove('bg-transparent', 'border-transparent');
+            } else {
+                header.classList.remove('bg-black/95', 'backdrop-blur-md', 'border-zinc-800');
+                header.classList.add('bg-transparent', 'border-transparent');
+            }
+
+            // Reveal
             var reveals = document.querySelectorAll(".reveal");
             for (var i = 0; i < reveals.length; i++) {
                 var windowHeight = window.innerHeight;
@@ -488,9 +459,9 @@
                 }
             }
         }
-        window.addEventListener("scroll", reveal);
+        window.addEventListener("scroll", onScroll);
         // Chama uma vez para exibir elementos visíveis na carga
-        reveal();
+        onScroll();
     </script>
     
     @livewireScripts
