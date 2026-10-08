@@ -19,6 +19,7 @@ class Appointment extends Model
         'status',
         'payment_method',
         'amount_paid',
+        'discount_amount',
         'change_amount',
         'commission_amount',
     ];
@@ -36,5 +37,12 @@ class Appointment extends Model
     public function service()
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class)
+            ->withPivot('quantity', 'unit_price')
+            ->withTimestamps();
     }
 }

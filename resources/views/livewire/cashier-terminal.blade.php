@@ -83,10 +83,10 @@
 
     <!-- Checkout Modal -->
     @if($checkoutAppointment)
-        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-fade-in-up">
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+            <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-2xl w-full max-w-2xl my-8 overflow-hidden shadow-2xl animate-fade-in-up">
                 
-                <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
+                <div class="p-6 border-b border-zinc-800 flex justify-between items-center sticky top-0 bg-[#111]/90 backdrop-blur-md z-10">
                     <h3 class="text-xl text-white font-serif">Finalizar Pagamento</h3>
                     <button wire:click="closeCheckout" class="text-zinc-500 hover:text-white transition-colors">
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -94,79 +94,138 @@
                 </div>
 
                 <div class="p-6 space-y-6">
-                    <!-- Resumo -->
+                    <!-- Detalhes do Serviço -->
                     <div class="bg-[#0a0a0a]/70 backdrop-blur-md rounded-xl p-5 border border-zinc-800/50 flex justify-between items-center">
                         <div>
-                            <p class="text-sm text-zinc-500 mb-1">Total a Pagar</p>
-                            <p class="text-white text-lg font-medium">{{ $checkoutAppointment->service->name }}</p>
+                            <p class="text-sm text-zinc-500 mb-1">Serviço Principal</p>
+                            <p class="text-white font-medium">{{ $checkoutAppointment->service->name }}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-3xl text-barber-primary font-bold">R$ {{ number_format($checkoutAppointment->service->price, 2, ',', '.') }}</p>
+                            <p class="text-xl text-white font-bold">R$ {{ number_format($checkoutAppointment->service->price, 2, ',', '.') }}</p>
                         </div>
                     </div>
 
-                    <!-- Forma de Pagamento -->
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-3">Forma de Pagamento</label>
-                        <div class="grid grid-cols-2 gap-3">
-                            <label class="cursor-pointer">
-                                <input type="radio" wire:model="payment_method" value="pix" class="peer sr-only">
-                                <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
-                                    <span class="font-medium text-sm">PIX</span>
+                    <!-- Produtos Consumidos -->
+                    <div class="bg-[#0a0a0a]/70 backdrop-blur-md rounded-xl p-5 border border-zinc-800/50 space-y-4">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                            <div class="w-full">
+                                <label class="block text-sm font-medium text-zinc-400 mb-2">Adicionar Produto</label>
+                                <div class="flex gap-2">
+                                    <select wire:model="selectedProduct" class="w-full bg-zinc-900 border border-zinc-700/50 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-barber-primary transition-colors text-sm">
+                                        <option value="">Selecione um produto...</option>
+                                        @foreach($availableProducts as $product)
+                                            <option value="{{ $product->id }}">{{ $product->name }} - R$ {{ number_format($product->price, 2, ',', '.') }} (Estoque: {{ $product->stock_quantity }})</option>
+                                        @endforeach
+                                    </select>
+                                    <button wire:click="addProduct" class="px-4 py-2 bg-zinc-800 text-white rounded-lg hover:bg-zinc-700 transition-colors">
+                                        Adicionar
+                                    </button>
                                 </div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" wire:model="payment_method" value="credit" class="peer sr-only">
-                                <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
-                                    <span class="font-medium text-sm">Cartão de Crédito</span>
-                                </div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" wire:model="payment_method" value="debit" class="peer sr-only">
-                                <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
-                                    <span class="font-medium text-sm">Cartão de Débito</span>
-                                </div>
-                            </label>
-                            <label class="cursor-pointer">
-                                <input type="radio" wire:model="payment_method" value="cash" class="peer sr-only">
-                                <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
-                                    <span class="font-medium text-sm">Dinheiro Físico</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Valores -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-400 mb-2">Valor Recebido (R$)</label>
-                            <input type="text" wire:model.live.debounce.500ms="amount_paid" onkeyup="maskCurrency(this)" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary transition-colors text-lg">
-                            @error('amount_paid') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-400 mb-2">Troco (R$)</label>
-                            <div class="w-full bg-zinc-900 border border-zinc-800/50 rounded-lg px-4 py-3 text-emerald-400 font-bold text-lg cursor-not-allowed">
-                                {{ number_format($change_amount, 2, ',', '.') }}
+                                @error('selectedProduct') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                             </div>
                         </div>
+
+                        <!-- Lista de Produtos Selecionados -->
+                        @if(count($selectedProductsList) > 0)
+                        <div class="space-y-2 mt-4">
+                            @foreach($selectedProductsList as $index => $item)
+                                <div class="flex items-center justify-between bg-zinc-900/50 rounded-lg p-3 border border-zinc-800/50">
+                                    <div class="flex-1">
+                                        <p class="text-white text-sm font-medium">{{ $item['name'] }}</p>
+                                        <p class="text-zinc-500 text-xs">R$ {{ number_format($item['price'], 2, ',', '.') }} un.</p>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex items-center bg-zinc-800 rounded-lg overflow-hidden">
+                                            <button wire:click="decreaseQuantity({{ $index }})" class="px-2 py-1 text-zinc-400 hover:text-white hover:bg-zinc-700">-</button>
+                                            <span class="px-3 text-sm text-white font-medium">{{ $item['quantity'] }}</span>
+                                            <button wire:click="increaseQuantity({{ $index }})" class="px-2 py-1 text-zinc-400 hover:text-white hover:bg-zinc-700">+</button>
+                                        </div>
+                                        <p class="text-white font-bold w-20 text-right">R$ {{ number_format($item['price'] * $item['quantity'], 2, ',', '.') }}</p>
+                                        <button wire:click="removeProduct({{ $index }})" class="p-1 text-zinc-500 hover:text-red-500 transition-colors" title="Remover">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        @endif
                     </div>
 
-                    <!-- Resumo da Comissão (Apenas para visualização) -->
-                    @php
-                        $barber = $checkoutAppointment->user;
-                        $servicePrice = $checkoutAppointment->service->price;
-                        $commission = $barber->commission_type === 'percentage' 
-                            ? $servicePrice * ($barber->commission_value / 100) 
-                            : $barber->commission_value;
-                    @endphp
-                    <div class="bg-zinc-900/50 rounded-lg p-3 border border-zinc-800/50 flex justify-between items-center mt-2">
-                        <span class="text-xs text-zinc-500 flex items-center gap-1.5">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                            Comissão p/ {{ $barber->name }}
-                        </span>
-                        <span class="text-sm text-zinc-400 font-medium">R$ {{ number_format($commission, 2, ',', '.') }}</span>
-                    </div>
+                    <!-- Desconto e Total -->
+                    <div class="bg-[#0a0a0a]/70 backdrop-blur-md rounded-xl p-5 border border-zinc-800/50 space-y-4">
+                        <div class="flex justify-between items-center pb-4 border-b border-zinc-800/50">
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Desconto Global (R$)</label>
+                                <input type="text" wire:model.live.debounce.500ms="discount_amount" onkeyup="maskCurrency(this)" placeholder="0,00" class="w-32 bg-zinc-900 border border-zinc-700/50 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-barber-primary transition-colors text-sm">
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-zinc-500 mb-1">Total a Pagar</p>
+                                <p class="text-3xl text-barber-primary font-bold">R$ {{ number_format($this->getExpectedTotal(), 2, ',', '.') }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Forma de Pagamento -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-400 mb-3">Forma de Pagamento</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <label class="cursor-pointer">
+                                    <input type="radio" wire:model="payment_method" value="pix" class="peer sr-only">
+                                    <div class="bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
+                                        <span class="font-medium text-sm">PIX</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" wire:model="payment_method" value="credit" class="peer sr-only">
+                                    <div class="bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
+                                        <span class="font-medium text-sm">Crédito</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" wire:model="payment_method" value="debit" class="peer sr-only">
+                                    <div class="bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
+                                        <span class="font-medium text-sm">Débito</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" wire:model="payment_method" value="cash" class="peer sr-only">
+                                    <div class="bg-zinc-900/50 border border-zinc-800 rounded-lg p-3 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
+                                        <span class="font-medium text-sm">Dinheiro</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
 
+                        <!-- Valores -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-2">Valor Recebido (R$)</label>
+                                <input type="text" wire:model.live.debounce.500ms="amount_paid" onkeyup="maskCurrency(this)" class="w-full bg-zinc-900 border border-zinc-700/50 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary transition-colors text-lg">
+                                @error('amount_paid') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-2">Troco (R$)</label>
+                                <div class="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-4 py-3 text-emerald-400 font-bold text-lg cursor-not-allowed">
+                                    {{ number_format($change_amount, 2, ',', '.') }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Resumo da Comissão -->
+                        @php
+                            $barber = $checkoutAppointment->user;
+                            $servicePrice = $checkoutAppointment->service->price;
+                            $commission = $barber->commission_type === 'percentage' 
+                                ? $servicePrice * ($barber->commission_value / 100) 
+                                : $barber->commission_value;
+                        @endphp
+                        <div class="bg-zinc-900/30 rounded-lg p-3 border border-zinc-800/50 flex justify-between items-center mt-2">
+                            <span class="text-xs text-zinc-500 flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                Comissão p/ {{ $barber->name }} (Somente Serviço)
+                            </span>
+                            <span class="text-sm text-zinc-400 font-medium">R$ {{ number_format($commission, 2, ',', '.') }}</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="p-6 border-t border-zinc-800 bg-[#0a0a0a]/70 backdrop-blur-md">

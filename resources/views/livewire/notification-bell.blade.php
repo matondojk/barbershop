@@ -12,15 +12,19 @@
 
     @if($isOpen)
         <!-- Overlay -->
-        <div class="fixed inset-0 z-40" wire:click="toggle"></div>
+        <div class="fixed inset-0 bg-black/60 lg:bg-transparent z-[60]" wire:click="toggle"></div>
         
-        <!-- Dropdown -->
-        <div class="absolute right-0 mt-2 w-80 bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-xl shadow-2xl z-50 overflow-hidden">
-            <div class="p-4 border-b border-zinc-800 bg-[#0a0a0a]/70 backdrop-blur-md">
-                <h3 class="text-white font-medium">Notificações</h3>
+        <!-- Dropdown (Desktop) / Sidebar (Mobile) -->
+        <div class="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-black/90 backdrop-blur-2xl border-l border-zinc-800 shadow-2xl z-[70] flex flex-col lg:absolute lg:inset-auto lg:right-0 lg:mt-2 lg:w-80 lg:bg-black/90 lg:border lg:rounded-xl lg:h-auto overflow-hidden">
+            
+            <div class="p-5 lg:p-4 border-b border-zinc-800 bg-black/90 backdrop-blur-md flex items-center justify-between">
+                <h3 class="text-white font-medium text-lg lg:text-base">Notificações</h3>
+                <button wire:click="toggle" class="lg:hidden text-zinc-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
             
-            <div class="max-h-[350px] overflow-y-auto">
+            <div class="flex-1 overflow-y-auto lg:max-h-[350px]">
                 @if($notifications->count() > 0)
                     @foreach($notifications as $notification)
                         <div class="p-4 border-b border-zinc-800/50 hover:bg-[#1a1a1a] transition-colors {{ is_null($notification->read_at) ? 'bg-[#151515]' : '' }}">
@@ -47,8 +51,8 @@
                 @endif
             </div>
             
-            <div class="p-3 bg-[#0a0a0a]/70 backdrop-blur-md text-center border-t border-zinc-800">
-                <a wire:navigate href="{{ route('dashboard') }}" class="text-xs text-barber-primary hover:text-white transition-colors">Ver Agenda Completa</a>
+            <div class="p-4 lg:p-3 bg-[#0a0a0a]/70 backdrop-blur-md text-center border-t border-zinc-800 lg:mt-0 mt-auto">
+                <a wire:navigate href="{{ route('dashboard') }}" class="text-sm lg:text-xs text-barber-primary hover:text-white transition-colors block py-2 lg:py-0">Ver Agenda Completa</a>
             </div>
         </div>
     @endif
