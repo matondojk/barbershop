@@ -49,10 +49,10 @@
     @if($appointments->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
             @foreach($appointments as $appt)
-                <div class="bg-zinc-900 border 
-                    {{ $appt->status === 'in_progress' ? 'border-barber-primary shadow-[0_0_20px_rgba(237,179,41,0.3)] bg-zinc-800' : 'border-zinc-700' }} 
-                    {{ $appt->status === 'rejected' || $appt->status === 'canceled' ? 'grayscale opacity-75' : '' }}
-                    {{ in_array($appt->status, ['awaiting_payment', 'completed']) ? 'border-green-500/50 bg-green-900/20' : '' }}
+                <div class="bg-[#1c1c1c] border 
+                    {{ $appt->status === 'in_progress' ? 'border-barber-primary shadow-[0_0_20px_rgba(237,179,41,0.3)] bg-[#2a2a2a]' : 'border-zinc-700' }} 
+                    {{ $appt->status === 'rejected' || $appt->status === 'canceled' ? 'grayscale opacity-75 bg-[#151515]' : '' }}
+                    {{ in_array($appt->status, ['awaiting_payment', 'completed']) ? 'border-green-500/50 bg-[#142217]' : '' }}
                     rounded-2xl p-4 md:p-5 flex flex-col transition-all duration-300 relative overflow-hidden">
                     
                     @if($appt->status === 'in_progress')

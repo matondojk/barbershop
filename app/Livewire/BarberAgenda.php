@@ -50,12 +50,8 @@ class BarberAgenda extends Component
             }),
         ];
 
-        $visibleAppointments = $appointments->reject(function($appt) {
-            return $appt->status === 'completed';
-        });
-
         return view('livewire.barber-agenda', [
-            'appointments' => $visibleAppointments,
+            'appointments' => $appointments,
             'stats' => $stats
         ])->layout('components.layouts.app');
     }
