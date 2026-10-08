@@ -16,7 +16,7 @@
             </p>
         </div>
         
-        <div class="flex items-center gap-2 bg-[#111] border border-zinc-800 px-4 py-2 rounded-full">
+        <div class="flex items-center gap-2 bg-[#111]/70 backdrop-blur-md border border-zinc-800 px-4 py-2 rounded-full">
             <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
             <span class="text-xs text-zinc-400 font-medium uppercase tracking-widest">Atualização em tempo real</span>
         </div>
@@ -25,14 +25,14 @@
     @if($appointments->count() > 0)
         <div class="space-y-5">
             @foreach($appointments as $appt)
-                <div class="group relative bg-[#0a0a0a] border {{ $appt->status == 'scheduled' ? 'border-zinc-800 hover:border-barber-primary/50' : 'border-zinc-800 opacity-50' }} rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all duration-300 overflow-hidden">
+                <div class="group relative bg-[#0a0a0a]/70 backdrop-blur-md border {{ $appt->status == 'scheduled' ? 'border-zinc-800 hover:border-barber-primary/50' : 'border-zinc-800 opacity-50' }} rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all duration-300 overflow-hidden">
                     
                     <!-- Glow Effect on Hover -->
                     <div class="absolute -inset-px bg-gradient-to-r from-barber-primary/0 via-barber-primary/10 to-barber-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
 
                     <!-- Time & Status -->
                     <div class="flex items-center gap-6 min-w-[220px] relative z-10">
-                        <div class="text-center bg-[#111] rounded-xl px-5 py-3 border border-zinc-800/50 group-hover:border-barber-primary/30 transition-colors">
+                        <div class="text-center bg-[#111]/70 backdrop-blur-md rounded-xl px-5 py-3 border border-zinc-800/50 group-hover:border-barber-primary/30 transition-colors">
                             <h3 class="text-3xl text-white font-serif tracking-wide">{{ substr($appt->start_time, 0, 5) }}</h3>
                             <p class="text-xs text-zinc-500 mt-1 uppercase tracking-widest">Até {{ substr($appt->end_time, 0, 5) }}</p>
                         </div>
@@ -95,7 +95,7 @@
                         
                         @if(auth()->user()->isAdmin())
                             <div class="h-12 w-px bg-zinc-800"></div>
-                            <div class="flex items-center gap-3 bg-[#111] p-2 pr-4 rounded-full border border-zinc-800">
+                            <div class="flex items-center gap-3 bg-[#111]/70 backdrop-blur-md p-2 pr-4 rounded-full border border-zinc-800">
                                 <div class="w-10 h-10 rounded-full bg-zinc-800 overflow-hidden border border-zinc-700 shrink-0">
                                     @if($appt->user->photo_path)
                                         <img src="{{ Storage::url($appt->user->photo_path) }}" class="w-full h-full object-cover">
@@ -115,9 +115,9 @@
             @endforeach
         </div>
     @else
-        <div class="bg-[#0a0a0a] border border-zinc-800 rounded-3xl p-16 text-center max-w-2xl mx-auto mt-12 relative overflow-hidden group">
+        <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-3xl p-16 text-center max-w-2xl mx-auto mt-12 relative overflow-hidden group">
             <div class="absolute inset-0 bg-gradient-to-b from-barber-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-            <div class="w-24 h-24 bg-[#111] border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-8 text-zinc-600 group-hover:text-barber-primary group-hover:scale-110 transition-all duration-500 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+            <div class="w-24 h-24 bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-8 text-zinc-600 group-hover:text-barber-primary group-hover:scale-110 transition-all duration-500 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
                 <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             </div>
             <h3 class="text-3xl text-white font-serif mb-4 relative z-10">Nenhum agendamento para hoje</h3>

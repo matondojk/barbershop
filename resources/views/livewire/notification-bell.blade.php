@@ -15,8 +15,8 @@
         <div class="fixed inset-0 z-40" wire:click="toggle"></div>
         
         <!-- Dropdown -->
-        <div class="absolute right-0 mt-2 w-80 bg-[#111] border border-zinc-800 rounded-xl shadow-2xl z-50 overflow-hidden">
-            <div class="p-4 border-b border-zinc-800 bg-[#0a0a0a]">
+        <div class="absolute right-0 mt-2 w-80 bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-xl shadow-2xl z-50 overflow-hidden">
+            <div class="p-4 border-b border-zinc-800 bg-[#0a0a0a]/70 backdrop-blur-md">
                 <h3 class="text-white font-medium">Notificações</h3>
             </div>
             
@@ -47,7 +47,7 @@
                 @endif
             </div>
             
-            <div class="p-3 bg-[#0a0a0a] text-center border-t border-zinc-800">
+            <div class="p-3 bg-[#0a0a0a]/70 backdrop-blur-md text-center border-t border-zinc-800">
                 <a wire:navigate href="{{ route('dashboard') }}" class="text-xs text-barber-primary hover:text-white transition-colors">Ver Agenda Completa</a>
             </div>
         </div>

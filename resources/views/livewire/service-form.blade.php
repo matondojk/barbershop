@@ -9,26 +9,26 @@
             </a>
         </div>
 
-        <div class="bg-[#111] border border-zinc-800 rounded-2xl p-8">
+        <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-2xl p-8">
             <h3 class="text-xl text-white font-serif mb-6">{{ $service_id ? 'Editar Informações do Corte' : 'Detalhes do Novo Corte' }}</h3>
             
             <form wire:submit="save" class="space-y-6">
                 
                 <div>
                     <label class="block text-sm font-medium text-zinc-400 mb-2">Nome do Corte</label>
-                    <input type="text" wire:model="name" required placeholder="Ex: Corte Degadê Clássico" class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
+                    <input type="text" wire:model="name" required placeholder="Ex: Corte Degadê Clássico" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
                     @error('name') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-zinc-400 mb-2">Preço (R$)</label>
-                    <input type="text" wire:model="price" onkeyup="maskCurrency(this)" required placeholder="0,00" class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
+                    <input type="text" wire:model="price" onkeyup="maskCurrency(this)" required placeholder="0,00" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
                     @error('price') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-zinc-400 mb-2">Duração Média (em minutos)</label>
-                    <select wire:model="duration_minutes" required class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors appearance-none">
+                    <select wire:model="duration_minutes" required class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors appearance-none">
                         <option value="">Selecione o tempo estimado...</option>
                         <option value="15">15 Minutos</option>
                         <option value="30">30 Minutos</option>
@@ -42,13 +42,13 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-zinc-400 mb-2">Descrição (Opcional)</label>
-                    <textarea wire:model="description" rows="3" placeholder="Detalhes sobre o que está incluso no corte..." class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors"></textarea>
+                    <textarea wire:model="description" rows="3" placeholder="Detalhes sobre o que está incluso no corte..." class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors"></textarea>
                     @error('description') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-zinc-400 mb-2">Status do Corte</label>
-                    <select wire:model="is_active" class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary transition-colors appearance-none">
+                    <select wire:model="is_active" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary transition-colors appearance-none">
                         <option value="1">Ativo (Visível para agendamento)</option>
                         <option value="0">Inativo</option>
                     </select>

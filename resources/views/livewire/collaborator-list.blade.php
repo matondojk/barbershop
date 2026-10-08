@@ -8,7 +8,7 @@
         </a>
     </div>
 
-    <div class="bg-[#111] border border-zinc-800 rounded-2xl overflow-hidden">
+    <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-2xl overflow-hidden">
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="bg-[#1a1a1a] border-b border-zinc-800 text-zinc-400 uppercase tracking-widest text-xs">

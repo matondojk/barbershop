@@ -11,7 +11,7 @@
         </a>
     </div>
 
-    <div class="bg-[#111] border border-zinc-800 rounded-2xl p-8">
+    <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-2xl p-8">
         
         @if ($errors->any())
             <div class="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-lg mb-6 text-sm">
@@ -29,23 +29,23 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-zinc-400 mb-2">Nome Completo</label>
-                    <input type="text" name="name" value="{{ old('name') }}" required class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
+                    <input type="text" name="name" value="{{ old('name') }}" required class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-zinc-400 mb-2">E-mail</label>
-                    <input type="email" name="email" value="{{ old('email') }}" required class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
+                    <input type="email" name="email" value="{{ old('email') }}" required class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-zinc-400 mb-2">CPF</label>
-                    <input type="text" name="cpf" id="cpf" value="{{ old('cpf') }}" required maxlength="14" class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors" oninput="maskCPF(this)">
+                    <input type="text" name="cpf" id="cpf" value="{{ old('cpf') }}" required maxlength="14" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors" oninput="maskCPF(this)">
                     <p class="text-xs text-zinc-500 mt-2">A senha inicial será os 6 primeiros dígitos do CPF.</p>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-zinc-400 mb-2">Atribuição (Cargo)</label>
-                    <select name="role" required class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors appearance-none">
+                    <select name="role" required class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors appearance-none">
                         <option value="">Selecione...</option>
                         <option value="barber" {{ old('role') === 'barber' ? 'selected' : '' }}>Barbeiro</option>
                         <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Administrador</option>
@@ -56,7 +56,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-zinc-400 mb-2">Foto de Perfil</label>
-                <input type="file" name="photo" accept="image/*" class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-zinc-800 file:text-barber-primary hover:file:bg-zinc-700 transition-colors">
+                <input type="file" name="photo" accept="image/*" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-zinc-800 file:text-barber-primary hover:file:bg-zinc-700 transition-colors">
             </div>
 
             <div class="pt-6 border-t border-zinc-800 flex justify-end">

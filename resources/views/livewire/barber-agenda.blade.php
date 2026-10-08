@@ -11,7 +11,7 @@
             </p>
         </div>
         
-        <div class="flex items-center gap-2 bg-[#111] border border-zinc-800 px-4 py-2 rounded-full">
+        <div class="flex items-center gap-2 bg-[#111]/70 backdrop-blur-md border border-zinc-800 px-4 py-2 rounded-full">
             <span class="w-2 h-2 rounded-full bg-barber-primary animate-pulse"></span>
             <span class="text-xs text-zinc-400 font-medium uppercase tracking-widest">Painel Conectado</span>
         </div>
@@ -19,22 +19,22 @@
 
     <!-- Indicadores Financeiros e Produção -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        <div class="bg-[#111] border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">
+        <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">
             <div class="absolute -right-4 -top-4 w-20 h-20 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all"></div>
             <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Total na Agenda</p>
             <h3 class="text-3xl text-white font-serif">{{ $stats['total_hoje'] }}</h3>
         </div>
-        <div class="bg-[#111] border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">
+        <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">
             <div class="absolute -right-4 -top-4 w-20 h-20 bg-yellow-500/10 rounded-full blur-xl group-hover:bg-yellow-500/20 transition-all"></div>
             <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Aguardando</p>
             <h3 class="text-3xl text-white font-serif">{{ $stats['aguardando'] }}</h3>
         </div>
-        <div class="bg-[#111] border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">
+        <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">
             <div class="absolute -right-4 -top-4 w-20 h-20 bg-green-500/10 rounded-full blur-xl group-hover:bg-green-500/20 transition-all"></div>
             <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Cortes Concluídos</p>
             <h3 class="text-3xl text-white font-serif">{{ $stats['concluidos'] }}</h3>
         </div>
-        <div class="bg-[#111] border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">
+        <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 p-5 rounded-2xl relative overflow-hidden group">
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-barber-primary/10 rounded-full blur-xl group-hover:bg-barber-primary/20 transition-all"></div>
             <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">Sua Comissão</p>
             <h3 class="text-3xl text-white font-serif"><span class="text-barber-primary text-xl">R$</span> {{ number_format($stats['faturamento'], 2, ',', '.') }}</h3>
@@ -46,7 +46,7 @@
     @if($appointments->count() > 0)
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             @foreach($appointments as $appt)
-                <div class="bg-[#111] border 
+                <div class="bg-[#111]/70 backdrop-blur-md border 
                     {{ $appt->status === 'in_progress' ? 'border-barber-primary shadow-[0_0_15px_rgba(237,179,41,0.1)]' : 'border-zinc-800' }} 
                     {{ $appt->status === 'rejected' || $appt->status === 'canceled' ? 'opacity-50 grayscale' : '' }}
                     {{ in_array($appt->status, ['awaiting_payment', 'completed']) ? 'border-green-500/30 bg-green-500/5' : '' }}
@@ -96,7 +96,7 @@
                             </a>
                         </div>
                         
-                        <div class="bg-[#0a0a0a] border border-zinc-800 rounded-xl p-4 flex items-center justify-between">
+                        <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-xl p-4 flex items-center justify-between">
                             <div>
                                 <p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">Serviço</p>
                                 <p class="text-white font-medium text-sm">{{ $appt->service->name }}</p>
@@ -111,14 +111,14 @@
                     <!-- Action Buttons -->
                     <div class="pt-4 border-t border-zinc-800/50 flex flex-wrap gap-2">
                         @if($appt->status === 'awaiting_payment' || $appt->status === 'completed' || $appt->status === 'rejected' || $appt->status === 'canceled')
-                            <div class="w-full bg-[#0a0a0a] border border-zinc-800/50 text-zinc-500 rounded-lg px-4 py-3 text-center text-sm font-medium opacity-70 cursor-not-allowed">
+                            <div class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800/50 text-zinc-500 rounded-lg px-4 py-3 text-center text-sm font-medium opacity-70 cursor-not-allowed">
                                 @if($appt->status === 'awaiting_payment') Aguardando Pagamento no Caixa 
                                 @elseif($appt->status === 'completed') Pago / Finalizado
                                 @else Atendimento Cancelado @endif
                             </div>
                         @else
                             <select wire:change="updateStatus({{ $appt->id }}, $event.target.value)" 
-                                    class="w-full bg-[#0a0a0a] border {{ $appt->status === 'in_progress' ? 'border-barber-primary/50 text-barber-primary' : 'border-zinc-700 text-white hover:border-zinc-500' }} rounded-lg px-4 py-3 focus:outline-none focus:border-barber-primary transition-colors appearance-none font-medium text-sm cursor-pointer shadow-sm">
+                                    class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border {{ $appt->status === 'in_progress' ? 'border-barber-primary/50 text-barber-primary' : 'border-zinc-700 text-white hover:border-zinc-500' }} rounded-lg px-4 py-3 focus:outline-none focus:border-barber-primary transition-colors appearance-none font-medium text-sm cursor-pointer shadow-sm">
                                 <option value="scheduled" {{ $appt->status === 'scheduled' ? 'selected' : '' }}>⏳ Aguardando Cliente</option>
                                 <option value="in_progress" {{ $appt->status === 'in_progress' ? 'selected' : '' }}>✂️ Iniciar Atendimento (Em Cadeira)</option>
                                 <option value="awaiting_payment" {{ $appt->status === 'awaiting_payment' ? 'selected' : '' }}>💳 Enviar para o Caixa</option>
@@ -131,9 +131,9 @@
             @endforeach
         </div>
     @else
-        <div class="bg-[#0a0a0a] border border-zinc-800 rounded-3xl p-16 text-center max-w-2xl mx-auto mt-12 relative overflow-hidden group">
+        <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-3xl p-16 text-center max-w-2xl mx-auto mt-12 relative overflow-hidden group">
             <div class="absolute inset-0 bg-gradient-to-b from-barber-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-            <div class="w-24 h-24 bg-[#111] border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-8 text-zinc-600 group-hover:text-barber-primary group-hover:scale-110 transition-all duration-500 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+            <div class="w-24 h-24 bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-8 text-zinc-600 group-hover:text-barber-primary group-hover:scale-110 transition-all duration-500 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
                 <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <h3 class="text-3xl text-white font-serif mb-4 relative z-10">Sua Agenda está Limpa</h3>

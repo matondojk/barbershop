@@ -12,7 +12,7 @@
         </div>
         
         <div class="w-full md:w-96 relative">
-            <input type="text" wire:model.live.debounce.300ms="searchCpf" placeholder="Buscar por CPF do Cliente..." class="w-full bg-[#111] border border-zinc-800 rounded-xl px-12 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
+            <input type="text" wire:model.live.debounce.300ms="searchCpf" placeholder="Buscar por CPF do Cliente..." class="w-full bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-xl px-12 py-3 text-white focus:outline-none focus:border-barber-primary focus:ring-1 focus:ring-barber-primary transition-colors">
             <svg class="w-5 h-5 text-zinc-500 absolute left-4 top-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
     </div>
@@ -20,7 +20,7 @@
     @if($pendingPayments->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             @foreach($pendingPayments as $appt)
-                <div class="bg-[#111] border border-zinc-800 rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden group hover:border-barber-primary/50 transition-colors">
+                <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden group hover:border-barber-primary/50 transition-colors">
                     <div class="absolute -right-4 -top-4 w-24 h-24 bg-green-500/5 rounded-full blur-xl group-hover:bg-green-500/10 transition-all"></div>
                     
                     <div class="flex justify-between items-start">
@@ -47,7 +47,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-[#0a0a0a] border border-zinc-800 rounded-xl p-4 space-y-3">
+                    <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-xl p-4 space-y-3">
                         <div class="flex justify-between items-center text-sm">
                             <span class="text-zinc-500">Serviço</span>
                             <span class="text-white font-medium">{{ $appt->service->name }}</span>
@@ -72,8 +72,8 @@
             @endforeach
         </div>
     @else
-        <div class="bg-[#0a0a0a] border border-zinc-800 rounded-3xl p-16 text-center max-w-2xl mx-auto mt-12">
-            <div class="w-24 h-24 bg-[#111] border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-8 text-zinc-600 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+        <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-3xl p-16 text-center max-w-2xl mx-auto mt-12">
+            <div class="w-24 h-24 bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-8 text-zinc-600 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
                 <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <h3 class="text-3xl text-white font-serif mb-4">Caixa Livre</h3>
@@ -84,7 +84,7 @@
     <!-- Checkout Modal -->
     @if($checkoutAppointment)
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-[#111] border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-fade-in-up">
+            <div class="bg-[#111]/70 backdrop-blur-md border border-zinc-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-fade-in-up">
                 
                 <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
                     <h3 class="text-xl text-white font-serif">Finalizar Pagamento</h3>
@@ -95,7 +95,7 @@
 
                 <div class="p-6 space-y-6">
                     <!-- Resumo -->
-                    <div class="bg-[#0a0a0a] rounded-xl p-5 border border-zinc-800/50 flex justify-between items-center">
+                    <div class="bg-[#0a0a0a]/70 backdrop-blur-md rounded-xl p-5 border border-zinc-800/50 flex justify-between items-center">
                         <div>
                             <p class="text-sm text-zinc-500 mb-1">Total a Pagar</p>
                             <p class="text-white text-lg font-medium">{{ $checkoutAppointment->service->name }}</p>
@@ -111,25 +111,25 @@
                         <div class="grid grid-cols-2 gap-3">
                             <label class="cursor-pointer">
                                 <input type="radio" wire:model="payment_method" value="pix" class="peer sr-only">
-                                <div class="bg-[#0a0a0a] border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
+                                <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
                                     <span class="font-medium text-sm">PIX</span>
                                 </div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" wire:model="payment_method" value="credit" class="peer sr-only">
-                                <div class="bg-[#0a0a0a] border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
+                                <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
                                     <span class="font-medium text-sm">Cartão de Crédito</span>
                                 </div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" wire:model="payment_method" value="debit" class="peer sr-only">
-                                <div class="bg-[#0a0a0a] border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
+                                <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
                                     <span class="font-medium text-sm">Cartão de Débito</span>
                                 </div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" wire:model="payment_method" value="cash" class="peer sr-only">
-                                <div class="bg-[#0a0a0a] border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
+                                <div class="bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 peer-checked:border-barber-primary peer-checked:text-barber-primary transition-all">
                                     <span class="font-medium text-sm">Dinheiro Físico</span>
                                 </div>
                             </label>
@@ -140,7 +140,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-zinc-400 mb-2">Valor Recebido (R$)</label>
-                            <input type="text" wire:model.live.debounce.500ms="amount_paid" onkeyup="maskCurrency(this)" class="w-full bg-[#0a0a0a] border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary transition-colors text-lg">
+                            <input type="text" wire:model.live.debounce.500ms="amount_paid" onkeyup="maskCurrency(this)" class="w-full bg-[#0a0a0a]/70 backdrop-blur-md border border-zinc-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-barber-primary transition-colors text-lg">
                             @error('amount_paid') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                         </div>
                         <div>
@@ -169,7 +169,7 @@
 
                 </div>
 
-                <div class="p-6 border-t border-zinc-800 bg-[#0a0a0a]">
+                <div class="p-6 border-t border-zinc-800 bg-[#0a0a0a]/70 backdrop-blur-md">
                     <button wire:click="confirmPayment" class="w-full py-4 bg-barber-primary text-black font-bold uppercase tracking-widest text-sm rounded-lg hover:bg-barber-light transition-all shadow-[0_0_15px_rgba(237,179,41,0.2)]">
                         Confirmar Pagamento e Baixar
                     </button>

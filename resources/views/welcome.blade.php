@@ -48,12 +48,12 @@
         }
     </style>
 </head>
-<body class="bg-[#0a0a0a] text-zinc-300 antialiased selection:bg-barber-primary selection:text-black overflow-x-hidden">
+<body class="bg-[#0a0a0a]/70 backdrop-blur-md text-zinc-300 antialiased selection:bg-barber-primary selection:text-black overflow-x-hidden">
 
     <!-- Header / Navbar -->
     <header id="header" class="fixed w-full top-0 z-50 transition-all duration-500 py-4">
         <div class="max-w-7xl mx-auto px-6 md:px-12">
-            <div class="flex justify-between items-center bg-[#111]/80 backdrop-blur-md rounded-full border border-zinc-800/50 px-6 py-3 shadow-2xl">
+            <div class="flex justify-between items-center bg-[#111]/70 backdrop-blur-md/80 backdrop-blur-md rounded-full border border-zinc-800/50 px-6 py-3 shadow-2xl">
                 <!-- Logo -->
                 <a href="#" class="flex items-center gap-3 group">
                     <img src="{{ asset('images/logo.png') }}" alt="Barbearia Barcelona" class="h-10 w-auto object-contain transition-transform duration-500 group-hover:scale-110">
@@ -138,7 +138,7 @@
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-32 relative bg-[#0a0a0a]">
+    <section id="services" class="py-32 relative bg-[#0a0a0a]/70 backdrop-blur-md">
         <!-- Linha divisória de luz -->
         <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-barber-primary/30 to-transparent"></div>
 
@@ -216,7 +216,7 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="py-32 bg-[#111] relative overflow-hidden">
+    <section id="about" class="py-32 bg-[#111]/70 backdrop-blur-md relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <!-- Imagem -->
@@ -225,7 +225,7 @@
                     <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Ambiente Barbearia" class="relative rounded-2xl shadow-2xl grayscale hover:grayscale-0 transition-all duration-700 w-full h-[600px] object-cover">
                     
                     <!-- Box flutuante -->
-                    <div class="absolute -bottom-10 -right-10 bg-[#0a0a0a] border border-barber-primary/30 p-8 rounded-xl shadow-2xl hidden md:block">
+                    <div class="absolute -bottom-10 -right-10 bg-[#0a0a0a]/70 backdrop-blur-md border border-barber-primary/30 p-8 rounded-xl shadow-2xl hidden md:block">
                         <div class="flex items-center gap-4">
                             <div class="text-barber-primary">
                                 <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -276,7 +276,7 @@
     </section>
 
     <!-- Galeria (Estilo Masonry/Grid Dinâmico) -->
-    <section id="gallery" class="py-32 bg-[#0a0a0a]">
+    <section id="gallery" class="py-32 bg-[#0a0a0a]/70 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-6 md:px-12">
             <div class="flex flex-col md:flex-row justify-between items-end mb-16 reveal">
                 <div>
@@ -313,7 +313,7 @@
     </section>
 
     <!-- Agendamento / Contato (Call to Action Final) -->
-    <section id="contact" class="py-32 relative bg-[#111]">
+    <section id="contact" class="py-32 relative bg-[#111]/70 backdrop-blur-md">
         <!-- Linha Superior -->
         <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-barber-primary/30 to-transparent"></div>
 
