@@ -13,7 +13,7 @@ class WhatsAppService
 
     public function __construct()
     {
-        $this->apiUrl = config('services.evolution.url', env('EVOLUTION_API_URL', 'http://localhost:8080'));
+        $this->apiUrl = config('services.evolution.url', env('EVOLUTION_API_URL', 'http://host.docker.internal:8080'));
         $this->apiKey = config('services.evolution.key', env('EVOLUTION_API_KEY'));
         $this->instance = config('services.evolution.instance', env('EVOLUTION_INSTANCE', 'Teste'));
     }
