@@ -48,7 +48,7 @@
         }
     </style>
 </head>
-<body class="bg-[#0a0a0a]/70 backdrop-blur-md text-zinc-300 antialiased selection:bg-barber-primary selection:text-black overflow-x-hidden">
+<body class="bg-[#0a0a0a] text-zinc-300 antialiased selection:bg-barber-primary selection:text-black overflow-x-hidden">
 
     <!-- Header / Navbar -->
     <header id="header" class="fixed w-full top-0 z-50 transition-all duration-300 border-b border-transparent bg-transparent">
