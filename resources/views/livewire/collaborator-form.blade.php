@@ -1,7 +1,13 @@
 <div>
-    @section('header_title', $user_id ? 'Editar Colaborador' : 'Novo Colaborador')
+    @section('header_title', 'Equipe')
 
-    <div class="mb-6 md:mb-8 flex justify-end">
+    <div class="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-2xl md:text-3xl text-white font-bold tracking-tight mb-1 md:mb-2">
+                {{ $user_id ? 'Editar Colaborador' : 'Novo Colaborador' }}
+            </h2>
+            <p class="text-sm md:text-base text-zinc-400">Preencha os dados abaixo para gerenciar o acesso.</p>
+        </div>
         <a wire:navigate href="{{ route('collaborators.index') }}" class="w-full md:w-auto px-6 py-2.5 rounded-xl border border-zinc-700 text-zinc-300 hover:bg-white/5 hover:text-white transition-all font-medium text-sm flex items-center justify-center gap-2">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             Voltar
