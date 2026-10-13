@@ -39,8 +39,8 @@ class WhatsAppBotService
         $phoneKey = preg_replace('/\D/', '', $phone);
         $cacheKey = "whatsapp_bot_session_{$phoneKey}";
 
-        // Global command to reset to main menu
-        if (in_array($lowerText, ['menu', 'inicio', 'início', 'começar', 'ola', 'olá', 'oi', 'ajuda', 'cancelar', 'sair', 'voltar', 'reset'])) {
+        // Global command to reset to main menu (match any variations of greeting or menu)
+        if (preg_match('/^(oi+|ol[aá]+|bom\s*dia|boa\s*tarde|boa\s*noite|menu|in[ií]cio|come[cç]ar|ajuda|cancelar|sair|voltar|reset|help|opa|fala|e\s*a[ií])/i', $lowerText)) {
             Cache::forget($cacheKey);
             $this->sendMainMenu($phone, $pushName);
 
@@ -131,10 +131,7 @@ class WhatsAppBotService
         } elseif ($input === '4') {
             $this->showAboutAndLocation($phone);
         } else {
-            $this->reply(
-                $phone,
-                'Opção inválida 🤔 Por favor, envie *1*, *2*, *3* ou *4* de acordo com o que você deseja:'
-            );
+            $this->sendMainMenu($phone, $session['pushName'] ?? 'Cliente');
         }
     }
 

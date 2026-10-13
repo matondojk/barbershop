@@ -48,6 +48,16 @@ class WhatsAppService
             $number = '55'.$number;
         }
 
+        // Brazilian 9th digit normalization:
+        // If 12 digits (55 + 2-digit DDD + 8-digit mobile starting with 6, 7, 8, 9),
+        // add the missing 9th digit so WhatsApp delivers to the current mobile JID without encryption delays
+        if (strlen($number) === 12 && str_starts_with($number, '55')) {
+            $firstPhoneDigit = $number[4];
+            if (in_array($firstPhoneDigit, ['6', '7', '8', '9'])) {
+                $number = substr($number, 0, 4).'9'.substr($number, 4);
+            }
+        }
+
         try {
             Log::info("Enviando WhatsApp para {$number} usando instância {$targetInstance}: \n{$message}");
 
