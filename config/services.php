@@ -36,7 +36,7 @@ return [
     ],
 
     'evolution' => [
-        'url' => env('EVOLUTION_API_URL', 'http://host.docker.internal:8080'),
+        'url' => env('EVOLUTION_API_URL', 'http://host.docker.internal:8090'),
         'key' => env('EVOLUTION_API_KEY'),
         'instance' => env('EVOLUTION_INSTANCE', 'Teste'),
     ],

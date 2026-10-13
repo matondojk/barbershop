@@ -19,7 +19,7 @@
     
     <!-- Background Full Screen Image -->
     <div class="fixed inset-0 w-full h-full z-0">
-        <div class="absolute inset-0 bg-black/80 z-10"></div>
+        <div class="absolute inset-0 bg-black/90 z-10"></div>
         <img src="{{ asset('images/bg/login-bg-1.jpg') }}" alt="Background" class="w-full h-full object-cover">
     </div>
 
