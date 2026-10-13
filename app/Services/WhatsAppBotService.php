@@ -15,15 +15,23 @@ use Illuminate\Support\Str;
 
 class WhatsAppBotService
 {
+    protected ?string $currentInstance = null;
+
     public function __construct(
         protected WhatsAppService $whatsAppService
     ) {}
 
+    protected function reply(string $phone, string $message): bool
+    {
+        return $this->whatsAppService->sendMessage($phone, $message, $this->currentInstance);
+    }
+
     /**
      * Process an incoming message from WhatsApp Webhook.
      */
-    public function processMessage(string $phone, string $text, string $pushName = 'Cliente'): void
+    public function processMessage(string $phone, string $text, string $pushName = 'Cliente', ?string $instance = null): void
     {
+        $this->currentInstance = $instance;
         $cleanText = trim($text);
         $lowerText = mb_strtolower($cleanText);
 
@@ -109,7 +117,7 @@ class WhatsAppBotService
              ."4️⃣ *Endereço e Contato*\n\n"
              .'_(Dica: você pode digitar *menu* a qualquer momento para voltar aqui)_';
 
-        $this->whatsAppService->sendMessage($phone, $msg);
+        $this->reply($phone, $msg);
     }
 
     protected function handleMenu(string $phone, string $input, array $session, string $cacheKey): void
@@ -123,7 +131,7 @@ class WhatsAppBotService
         } elseif ($input === '4') {
             $this->showAboutAndLocation($phone);
         } else {
-            $this->whatsAppService->sendMessage(
+            $this->reply(
                 $phone,
                 'Opção inválida 🤔 Por favor, envie *1*, *2*, *3* ou *4* de acordo com o que você deseja:'
             );
@@ -138,7 +146,7 @@ class WhatsAppBotService
         $services = Service::where('is_active', true)->orderBy('price', 'asc')->get();
 
         if ($services->isEmpty()) {
-            $this->whatsAppService->sendMessage($phone, 'No momento não há serviços disponíveis para agendamento. Por favor, tente novamente mais tarde.');
+            $this->reply($phone, 'No momento não há serviços disponíveis para agendamento. Por favor, tente novamente mais tarde.');
 
             return;
         }
@@ -161,7 +169,7 @@ class WhatsAppBotService
         $session['service_options'] = $options;
         Cache::put($cacheKey, $session, now()->addHours(2));
 
-        $this->whatsAppService->sendMessage($phone, $text);
+        $this->reply($phone, $text);
     }
 
     protected function handleChoosingService(string $phone, string $input, array $session, string $cacheKey): void
@@ -174,7 +182,7 @@ class WhatsAppBotService
 
         $serviceOptions = $session['service_options'] ?? [];
         if (! isset($serviceOptions[$input])) {
-            $this->whatsAppService->sendMessage($phone, 'Número inválido. Por favor, digite o número correspondente a um dos serviços listados acima (ou *0* para voltar).');
+            $this->reply($phone, 'Número inválido. Por favor, digite o número correspondente a um dos serviços listados acima (ou *0* para voltar).');
 
             return;
         }
@@ -215,7 +223,7 @@ class WhatsAppBotService
         $session['barber_options'] = $barberOptions;
         Cache::put($cacheKey, $session, now()->addHours(2));
 
-        $this->whatsAppService->sendMessage($phone, $text);
+        $this->reply($phone, $text);
     }
 
     protected function handleChoosingBarber(string $phone, string $input, array $session, string $cacheKey): void
@@ -228,7 +236,7 @@ class WhatsAppBotService
 
         $barberOptions = $session['barber_options'] ?? [];
         if (! isset($barberOptions[$input])) {
-            $this->whatsAppService->sendMessage($phone, 'Opção inválida. Digite o número de um dos barbeiros acima (ou *0* para voltar).');
+            $this->reply($phone, 'Opção inválida. Digite o número de um dos barbeiros acima (ou *0* para voltar).');
 
             return;
         }
@@ -268,7 +276,7 @@ class WhatsAppBotService
         $session['date_options'] = $dateOptions;
         Cache::put($cacheKey, $session, now()->addHours(2));
 
-        $this->whatsAppService->sendMessage($phone, $text);
+        $this->reply($phone, $text);
     }
 
     protected function handleChoosingDate(string $phone, string $input, array $session, string $cacheKey): void
@@ -283,7 +291,7 @@ class WhatsAppBotService
 
         $dateOptions = $session['date_options'] ?? [];
         if (! isset($dateOptions[$input])) {
-            $this->whatsAppService->sendMessage($phone, 'Data inválida. Envie o número de uma das datas listadas acima (ou *0* para voltar).');
+            $this->reply($phone, 'Data inválida. Envie o número de uma das datas listadas acima (ou *0* para voltar).');
 
             return;
         }
@@ -302,7 +310,7 @@ class WhatsAppBotService
         $slots = $this->calculateAvailableSlots($selectedDate, $session['barber_id'], $service);
 
         if (empty($slots)) {
-            $this->whatsAppService->sendMessage(
+            $this->reply(
                 $phone,
                 "😕 Puxa, não encontramos horários disponíveis para este dia com este profissional.\n\n"
                 .'Digite *0* para escolher outra data ou profissional, ou envie *menu* para reiniciar.'
@@ -329,7 +337,7 @@ class WhatsAppBotService
         $session['time_options'] = $timeOptions;
         Cache::put($cacheKey, $session, now()->addHours(2));
 
-        $this->whatsAppService->sendMessage($phone, $text);
+        $this->reply($phone, $text);
     }
 
     protected function handleChoosingTime(string $phone, string $input, array $session, string $cacheKey): void
@@ -344,7 +352,7 @@ class WhatsAppBotService
 
         $timeOptions = $session['time_options'] ?? [];
         if (! isset($timeOptions[$input])) {
-            $this->whatsAppService->sendMessage($phone, 'Horário inválido. Digite o número de um dos horários acima (ou *0* para voltar).');
+            $this->reply($phone, 'Horário inválido. Digite o número de um dos horários acima (ou *0* para voltar).');
 
             return;
         }
@@ -377,7 +385,7 @@ class WhatsAppBotService
                 $msg .= ':';
             }
 
-            $this->whatsAppService->sendMessage($phone, $msg);
+            $this->reply($phone, $msg);
         }
     }
 
@@ -390,7 +398,7 @@ class WhatsAppBotService
         }
 
         if (mb_strlen($name) < 3) {
-            $this->whatsAppService->sendMessage($phone, 'Por favor, digite seu nome completo (mínimo 3 letras):');
+            $this->reply($phone, 'Por favor, digite seu nome completo (mínimo 3 letras):');
 
             return;
         }
@@ -399,7 +407,7 @@ class WhatsAppBotService
         $session['step'] = 'ASKING_CPF';
         Cache::put($cacheKey, $session, now()->addHours(2));
 
-        $this->whatsAppService->sendMessage(
+        $this->reply(
             $phone,
             "Ótimo, *{$name}*! Agora, informe o seu *CPF* (apenas números ou formatado):"
         );
@@ -410,7 +418,7 @@ class WhatsAppBotService
         $cpfClean = preg_replace('/\D/', '', $input);
 
         if (strlen($cpfClean) !== 11) {
-            $this->whatsAppService->sendMessage($phone, 'CPF inválido. Por favor, envie os 11 dígitos do seu CPF (apenas números):');
+            $this->reply($phone, 'CPF inválido. Por favor, envie os 11 dígitos do seu CPF (apenas números):');
 
             return;
         }
@@ -442,20 +450,20 @@ class WhatsAppBotService
                  ."1️⃣ - ✅ *Confirmar Agendamento*\n"
                  .'0️⃣ - ❌ *Cancelar e Voltar ao Menu*';
 
-        $this->whatsAppService->sendMessage($phone, $summary);
+        $this->reply($phone, $summary);
     }
 
     protected function handleConfirming(string $phone, string $input, array $session, string $cacheKey): void
     {
         if ($input === '0') {
             Cache::forget($cacheKey);
-            $this->whatsAppService->sendMessage($phone, 'Agendamento cancelado. Se precisar de algo mais, basta digitar *menu*!');
+            $this->reply($phone, 'Agendamento cancelado. Se precisar de algo mais, basta digitar *menu*!');
 
             return;
         }
 
         if ($input !== '1') {
-            $this->whatsAppService->sendMessage($phone, 'Digite *1* para confirmar o agendamento ou *0* para cancelar.');
+            $this->reply($phone, 'Digite *1* para confirmar o agendamento ou *0* para cancelar.');
 
             return;
         }
@@ -465,7 +473,7 @@ class WhatsAppBotService
 
         if (! $service || ! $barber) {
             Cache::forget($cacheKey);
-            $this->whatsAppService->sendMessage($phone, 'Ocorreu um erro ao localizar o serviço ou barbeiro. Por favor, reinicie digitando *menu*.');
+            $this->reply($phone, 'Ocorreu um erro ao localizar o serviço ou barbeiro. Por favor, reinicie digitando *menu*.');
 
             return;
         }
@@ -536,7 +544,7 @@ class WhatsAppBotService
                   ."{$manageUrl}\n\n"
                   .'Te esperamos lá!';
 
-        $this->whatsAppService->sendMessage($phone, $finalMsg);
+        $this->reply($phone, $finalMsg);
     }
 
     /**
@@ -550,7 +558,7 @@ class WhatsAppBotService
         $customer = Customer::where('whatsapp', 'like', "%{$last9}%")->first();
 
         if (! $customer) {
-            $this->whatsAppService->sendMessage(
+            $this->reply(
                 $phone,
                 "Você ainda não possui nenhum agendamento cadastrado conosco.\n\nDigite *1* para agendar agora ou *menu* para voltar."
             );
@@ -567,7 +575,7 @@ class WhatsAppBotService
             ->first();
 
         if (! $upcoming) {
-            $this->whatsAppService->sendMessage(
+            $this->reply(
                 $phone,
                 "Olá, *{$customer->name}*! Você não possui nenhum agendamento pendente no momento.\n\nDigite *1* para agendar um novo horário ou *menu* para voltar."
             );
@@ -593,7 +601,7 @@ class WhatsAppBotService
              ."1️⃣ - ❌ *Sim, cancelar este agendamento*\n"
              .'0️⃣ - 🔙 *Não, manter e voltar ao menu*';
 
-        $this->whatsAppService->sendMessage($phone, $msg);
+        $this->reply($phone, $msg);
     }
 
     protected function handleConfirmCancelAppt(string $phone, string $input, array $session, string $cacheKey): void
@@ -614,14 +622,14 @@ class WhatsAppBotService
                 }
 
                 Cache::forget($cacheKey);
-                $this->whatsAppService->sendMessage($phone, "✅ Seu agendamento foi cancelado com sucesso.\n\nQuando quiser remarcar, basta digitar *menu*!");
+                $this->reply($phone, "✅ Seu agendamento foi cancelado com sucesso.\n\nQuando quiser remarcar, basta digitar *menu*!");
 
                 return;
             }
         }
 
         Cache::forget($cacheKey);
-        $this->whatsAppService->sendMessage($phone, 'Seu horário foi mantido! Se precisar de algo, envie *menu*.');
+        $this->reply($phone, 'Seu horário foi mantido! Se precisar de algo, envie *menu*.');
     }
 
     /**
@@ -645,7 +653,7 @@ class WhatsAppBotService
 
         $text .= 'Digite *1* para agendar um horário ou *menu* para voltar.';
 
-        $this->whatsAppService->sendMessage($phone, $text);
+        $this->reply($phone, $text);
     }
 
     /**
@@ -659,7 +667,7 @@ class WhatsAppBotService
               ."☕ Ambiente climatizado, chopp/café cortesia e música ambiente selecionada.\n\n"
               .'Digite *1* para agendar seu horário ou *menu* para voltar.';
 
-        $this->whatsAppService->sendMessage($phone, $text);
+        $this->reply($phone, $text);
     }
 
     /**
