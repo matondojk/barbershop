@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\WhatsappInstance;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -50,6 +51,9 @@ class WhatsAppService
         try {
             Log::info("Enviando WhatsApp para {$number} usando instância {$targetInstance}: \n{$message}");
 
+            // Store message text hash in cache to identify bot self-replies
+            Cache::put('bot_sent_hash_'.md5(trim($message)), true, now()->addMinutes(2));
+
             $response = Http::withHeaders([
                 'apikey' => $this->apiKey,
                 'Content-Type' => 'application/json',
@@ -59,6 +63,12 @@ class WhatsAppService
             ]);
 
             if ($response->successful()) {
+                $resData = $response->json();
+                $msgId = $resData['key']['id'] ?? $resData['id'] ?? null;
+                if ($msgId) {
+                    Cache::put("bot_sent_msg_id_{$msgId}", true, now()->addMinutes(10));
+                }
+
                 return true;
             }
 

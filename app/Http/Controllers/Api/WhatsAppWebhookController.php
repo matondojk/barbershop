@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\WhatsAppBotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class WhatsAppWebhookController extends Controller
@@ -54,36 +55,33 @@ class WhatsAppWebhookController extends Controller
         }
 
         $key = $data['key'] ?? [];
+        $messageId = $key['id'] ?? $data['id'] ?? null;
         $fromMe = $key['fromMe'] ?? $data['fromMe'] ?? false;
         $remoteJid = $key['remoteJid'] ?? $data['remoteJid'] ?? $payload['sender'] ?? '';
 
         Log::info('Webhook Message Parsed: ', [
             'fromMe' => $fromMe,
+            'messageId' => $messageId,
             'remoteJid' => $remoteJid,
+            'sender' => $payload['sender'] ?? null,
+            'destination' => $payload['destination'] ?? null,
         ]);
 
-        // Ignore messages sent by the bot itself
-        if ($fromMe) {
-            Log::info('Webhook ignorado: fromMe = true');
+        // 1. Check if this exact message ID was sent by our bot API
+        if ($messageId && Cache::has("bot_sent_msg_id_{$messageId}")) {
+            Log::info("Webhook ignorado: ID gerado pelo bot ({$messageId})");
 
-            return response()->json(['status' => 'ignored_from_me']);
+            return response()->json(['status' => 'ignored_bot_api_message']);
         }
 
-        // Ignore groups or status updates
+        // 2. Ignore groups or status updates
         if (str_contains($remoteJid, '@g.us') || str_contains($remoteJid, 'status@broadcast')) {
             Log::info("Webhook ignorado: grupo ou broadcast ({$remoteJid})");
 
             return response()->json(['status' => 'ignored_group_or_broadcast']);
         }
 
-        $phone = explode('@', $remoteJid)[0];
-        if (empty($phone)) {
-            Log::warning("Webhook ignorado: telefone vazio. remoteJid: {$remoteJid}");
-
-            return response()->json(['status' => 'ignored_no_phone']);
-        }
-
-        // Extract message text from different Evolution API formats
+        // 3. Extract text
         $messageObj = $data['message'] ?? [];
         $text = $messageObj['conversation']
             ?? $messageObj['extendedTextMessage']['text']
@@ -95,8 +93,6 @@ class WhatsAppWebhookController extends Controller
             ?? $data['text']
             ?? '';
 
-        $pushName = $data['pushName'] ?? 'Cliente';
-
         if (empty(trim($text))) {
             Log::warning('Webhook ignorado: texto vazio', [
                 'messageObj' => $messageObj,
@@ -106,7 +102,56 @@ class WhatsAppWebhookController extends Controller
             return response()->json(['status' => 'ignored_empty_text']);
         }
 
+        // 4. Check if this text hash was recently sent by the bot (prevents loop)
+        $textHash = md5(trim($text));
+        if (Cache::has("bot_sent_hash_{$textHash}")) {
+            Log::info('Webhook ignorado: hash de resposta do bot');
+
+            return response()->json(['status' => 'ignored_bot_text_hash']);
+        }
+
+        // 5. Determine the phone number
+        $candidateSources = [
+            $payload['sender'] ?? '',
+            $payload['destination'] ?? '',
+            $data['participant'] ?? '',
+            $data['key']['participant'] ?? '',
+            $remoteJid,
+        ];
+
+        $phone = '';
+        foreach ($candidateSources as $source) {
+            if (! empty($source) && ! str_contains($source, '@g.us') && ! str_contains($source, 'status@broadcast')) {
+                // If not @lid, extract phone
+                if (! str_contains($source, '@lid')) {
+                    $cleaned = preg_replace('/\D/', '', explode('@', $source)[0]);
+                    if (strlen($cleaned) >= 10) {
+                        $phone = $cleaned;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // If only @lid exists, extract digits or user phone
+        if (empty($phone)) {
+            $cleaned = preg_replace('/\D/', '', explode('@', $remoteJid)[0]);
+            $phone = $cleaned ?: explode('@', $remoteJid)[0];
+        }
+
+        if (empty($phone)) {
+            Log::warning("Webhook ignorado: telefone vazio. remoteJid: {$remoteJid}");
+
+            return response()->json(['status' => 'ignored_no_phone']);
+        }
+
+        if ($fromMe) {
+            Log::info("Processando mensagem enviada pelo próprio número ({$phone}) para fins de teste.");
+        }
+
+        $pushName = $data['pushName'] ?? 'Cliente';
         $instance = $payload['instance'] ?? 'wp_barber';
+
         Log::info("WhatsApp Bot processando mensagem de {$phone} ({$pushName}) na instância {$instance}: {$text}");
 
         try {
