@@ -85,6 +85,14 @@ class WhatsAppBotService
                 $this->handleConfirming($phone, $cleanText, $session, $cacheKey);
                 break;
 
+            case 'SELECTING_APPT':
+                $this->handleSelectingAppt($phone, $cleanText, $session, $cacheKey);
+                break;
+
+            case 'MANAGING_APPT':
+                $this->handleManagingAppt($phone, $cleanText, $session, $cacheKey);
+                break;
+
             case 'CONFIRM_CANCEL_APPT':
                 $this->handleConfirmCancelAppt($phone, $cleanText, $session, $cacheKey);
                 break;
@@ -112,7 +120,7 @@ class WhatsAppBotService
              ."{$saudacao}, *{$name}*! Seja muito bem-vindo(a) ao nosso atendimento virtual.\n\n"
              ."Como posso te ajudar hoje? Envie o *número* da opção desejada:\n\n"
              ."1️⃣ *Agendar Horário*\n"
-             ."2️⃣ *Meus Agendamentos (Ver ou Cancelar)*\n"
+             ."2️⃣ *Meus Agendamentos (Ver, Alterar ou Cancelar)*\n"
              ."3️⃣ *Ver Serviços e Valores*\n"
              ."4️⃣ *Endereço e Contato*\n\n"
              .'_(Dica: você pode digitar *menu* a qualquer momento para voltar aqui)_';
@@ -123,6 +131,7 @@ class WhatsAppBotService
     protected function handleMenu(string $phone, string $input, array $session, string $cacheKey): void
     {
         if ($input === '1') {
+            unset($session['editing_appointment_id'], $session['edit_mode']);
             $this->startScheduling($phone, $session, $cacheKey);
         } elseif ($input === '2') {
             $this->showCustomerAppointments($phone, $session, $cacheKey);
@@ -148,6 +157,9 @@ class WhatsAppBotService
             return;
         }
 
+        $isEditing = ! empty($session['editing_appointment_id']);
+        $currentServiceId = $session['service_id'] ?? null;
+
         $options = [];
         $text = "✂️ *Escolha o serviço desejado:*\n\n";
 
@@ -155,11 +167,13 @@ class WhatsAppBotService
         foreach ($services as $srv) {
             $options[$num] = $srv->id;
             $formattedPrice = number_format($srv->price, 2, ',', '.');
-            $text .= "{$num} - *{$srv->name}* (R$ {$formattedPrice} - {$srv->duration_minutes} min)\n";
+            $currentTag = ($isEditing && (int) $currentServiceId === (int) $srv->id) ? ' *(Atual)*' : '';
+            $text .= "{$num} - *{$srv->name}* (R$ {$formattedPrice} - {$srv->duration_minutes} min){$currentTag}\n";
             $num++;
         }
 
-        $text .= "\n0 - 🔙 Voltar ao menu principal\n\n";
+        $backLabel = $isEditing ? 'Voltar ao gerenciamento do agendamento' : 'Voltar ao menu principal';
+        $text .= "\n0 - 🔙 {$backLabel}\n\n";
         $text .= 'Envie o *número* do serviço:';
 
         $session['step'] = 'CHOOSING_SERVICE';
@@ -171,8 +185,14 @@ class WhatsAppBotService
 
     protected function handleChoosingService(string $phone, string $input, array $session, string $cacheKey): void
     {
+        $isEditing = ! empty($session['editing_appointment_id']);
+
         if ($input === '0') {
-            $this->sendMainMenu($phone, $session['pushName'] ?? 'Cliente');
+            if ($isEditing) {
+                $this->returnToManageAppointment($phone, $session, $cacheKey);
+            } else {
+                $this->sendMainMenu($phone, $session['pushName'] ?? 'Cliente');
+            }
 
             return;
         }
@@ -195,6 +215,21 @@ class WhatsAppBotService
 
         $session['service_id'] = $serviceId;
 
+        if ($isEditing && ($session['edit_mode'] ?? '') === 'service') {
+            // Check available slots on the current appointment date & barber for the new service duration
+            $this->promptChoosingTimeForDate($phone, $session, $cacheKey, $session['appointment_date']);
+
+            return;
+        }
+
+        $this->promptChoosingBarber($phone, $session, $cacheKey);
+    }
+
+    protected function promptChoosingBarber(string $phone, array $session, string $cacheKey): void
+    {
+        $isEditing = ! empty($session['editing_appointment_id']);
+        $currentBarberId = $session['barber_id'] ?? null;
+
         // Load active barbers
         $barbers = User::whereNotNull('roles')
             ->where('is_active', true)
@@ -209,7 +244,8 @@ class WhatsAppBotService
         $idx = 2;
         foreach ($barbers as $barber) {
             $barberOptions[$idx] = $barber->id;
-            $text .= "{$idx} - {$barber->name}\n";
+            $currentTag = ($isEditing && (int) $currentBarberId === (int) $barber->id) ? ' *(Atual)*' : '';
+            $text .= "{$idx} - {$barber->name}{$currentTag}\n";
             $idx++;
         }
 
@@ -225,8 +261,14 @@ class WhatsAppBotService
 
     protected function handleChoosingBarber(string $phone, string $input, array $session, string $cacheKey): void
     {
+        $isEditing = ! empty($session['editing_appointment_id']);
+
         if ($input === '0') {
-            $this->startScheduling($phone, $session, $cacheKey);
+            if ($isEditing && ($session['edit_mode'] ?? '') === 'barber') {
+                $this->returnToManageAppointment($phone, $session, $cacheKey);
+            } else {
+                $this->startScheduling($phone, $session, $cacheKey);
+            }
 
             return;
         }
@@ -240,6 +282,32 @@ class WhatsAppBotService
 
         $session['barber_id'] = $barberOptions[$input];
 
+        if ($isEditing && ($session['edit_mode'] ?? '') === 'barber' && ! empty($session['appointment_date'])) {
+            $service = Service::find($session['service_id']);
+            if ($service) {
+                $slots = $this->calculateAvailableSlots(
+                    $session['appointment_date'],
+                    $session['barber_id'],
+                    $service,
+                    (int) $session['editing_appointment_id']
+                );
+
+                if (! empty($slots)) {
+                    $this->promptChoosingTimeForDate($phone, $session, $cacheKey, $session['appointment_date']);
+
+                    return;
+                }
+            }
+        }
+
+        $this->promptChoosingDate($phone, $session, $cacheKey);
+    }
+
+    protected function promptChoosingDate(string $phone, array $session, string $cacheKey, ?string $prefixNotice = null): void
+    {
+        $isEditing = ! empty($session['editing_appointment_id']);
+        $currentDate = $session['appointment_date'] ?? null;
+
         // Generate available dates (from today through end of current week, or next week if Sunday)
         $date = Carbon::now();
         if ($date->isSunday()) {
@@ -248,7 +316,8 @@ class WhatsAppBotService
         $saturday = $date->copy()->endOfWeek()->subDay();
 
         $dateOptions = [];
-        $text = "📅 *Escolha a data do agendamento:*\n\n";
+        $text = $prefixNotice ? "{$prefixNotice}\n\n" : '';
+        $text .= "📅 *Escolha a data do agendamento:*\n\n";
         $dIdx = 1;
 
         while ($date->lte($saturday)) {
@@ -261,7 +330,8 @@ class WhatsAppBotService
                     ? 'Amanhã ('.$date->format('d/m').' - '.ucfirst($date->translatedFormat('l')).')'
                     : $date->format('d/m').' ('.ucfirst($date->translatedFormat('l')).')');
 
-            $text .= "{$dIdx} - {$dayLabel}\n";
+            $currentTag = ($isEditing && $currentDate === $formattedYmd) ? ' *(Data atual)*' : '';
+            $text .= "{$dIdx} - {$dayLabel}{$currentTag}\n";
             $date->addDay();
             $dIdx++;
         }
@@ -278,10 +348,18 @@ class WhatsAppBotService
 
     protected function handleChoosingDate(string $phone, string $input, array $session, string $cacheKey): void
     {
+        $isEditing = ! empty($session['editing_appointment_id']);
+
         if ($input === '0') {
-            // Re-trigger barber selection
-            $session['step'] = 'CHOOSING_SERVICE';
-            $this->handleChoosingService($phone, (string) array_search($session['service_id'], $session['service_options'] ?? []), $session, $cacheKey);
+            if ($isEditing) {
+                if (($session['edit_mode'] ?? '') === 'barber') {
+                    $this->promptChoosingBarber($phone, $session, $cacheKey);
+                } else {
+                    $this->returnToManageAppointment($phone, $session, $cacheKey);
+                }
+            } else {
+                $this->promptChoosingBarber($phone, $session, $cacheKey);
+            }
 
             return;
         }
@@ -296,21 +374,44 @@ class WhatsAppBotService
         $selectedDate = $dateOptions[$input];
         $session['appointment_date'] = $selectedDate;
 
-        $service = Service::find($session['service_id']);
+        $this->promptChoosingTimeForDate($phone, $session, $cacheKey, $selectedDate);
+    }
+
+    protected function promptChoosingTimeForDate(string $phone, array $session, string $cacheKey, string $selectedDate): void
+    {
+        $service = Service::find($session['service_id'] ?? null);
         if (! $service) {
             $this->startScheduling($phone, $session, $cacheKey);
 
             return;
         }
 
+        $isEditing = ! empty($session['editing_appointment_id']);
+        $excludeId = $isEditing ? (int) $session['editing_appointment_id'] : null;
+
         // Calculate available slots
-        $slots = $this->calculateAvailableSlots($selectedDate, $session['barber_id'], $service);
+        $slots = $this->calculateAvailableSlots($selectedDate, $session['barber_id'], $service, $excludeId);
 
         if (empty($slots)) {
-            $this->reply(
+            $dateFormatted = Carbon::parse($selectedDate)->format('d/m/Y');
+            if ($isEditing && ($session['edit_mode'] ?? '') === 'time') {
+                $this->reply(
+                    $phone,
+                    "😕 Não há outros horários disponíveis para o dia *{$dateFormatted}* com este profissional.\n\n"
+                    .'Envie *0* para voltar às opções de alteração (você pode tentar trocar a data ou o barbeiro).'
+                );
+                $session['step'] = 'CHOOSING_TIME';
+                $session['time_options'] = [];
+                Cache::put($cacheKey, $session, now()->addHours(2));
+
+                return;
+            }
+
+            $this->promptChoosingDate(
                 $phone,
-                "😕 Puxa, não encontramos horários disponíveis para este dia com este profissional.\n\n"
-                .'Digite *0* para escolher outra data ou profissional, ou envie *menu* para reiniciar.'
+                $session,
+                $cacheKey,
+                "😕 Puxa, não encontramos horários disponíveis para *{$dateFormatted}* com este profissional. Escolha outra data:"
             );
 
             return;
@@ -318,16 +419,25 @@ class WhatsAppBotService
 
         $timeOptions = [];
         $dateFormatted = Carbon::parse($selectedDate)->format('d/m/Y');
+        $currentApptTime = $session['current_appt_time'] ?? null;
+        $currentApptDate = $session['current_appt_date'] ?? null;
+
         $text = "⏰ *Horários disponíveis para {$dateFormatted}:*\n\n";
 
         $tIdx = 1;
         foreach ($slots as $slotInfo) {
             $timeOptions[$tIdx] = $slotInfo; // ['time' => '10:00', 'barber_id' => 1]
-            $text .= "{$tIdx} - {$slotInfo['time']}\n";
+            $isCurrentSlot = ($isEditing && $currentApptDate === $selectedDate && $currentApptTime === $slotInfo['time']);
+            $currentTag = $isCurrentSlot ? ' *(Horário atual)*' : '';
+            $text .= "{$tIdx} - {$slotInfo['time']}{$currentTag}\n";
             $tIdx++;
         }
 
-        $text .= "\n0 - 🔙 Escolher outra data\n\n";
+        $backText = ($isEditing && ($session['edit_mode'] ?? '') === 'time')
+            ? 'Voltar às opções do agendamento'
+            : 'Escolher outra data';
+
+        $text .= "\n0 - 🔙 {$backText}\n\n";
         $text .= 'Envie o *número* do horário desejado:';
 
         $session['step'] = 'CHOOSING_TIME';
@@ -339,10 +449,14 @@ class WhatsAppBotService
 
     protected function handleChoosingTime(string $phone, string $input, array $session, string $cacheKey): void
     {
+        $isEditing = ! empty($session['editing_appointment_id']);
+
         if ($input === '0') {
-            // Re-trigger date selection
-            $session['step'] = 'CHOOSING_BARBER';
-            $this->handleChoosingBarber($phone, (string) array_search($session['barber_id'], $session['barber_options'] ?? []), $session, $cacheKey);
+            if ($isEditing && ($session['edit_mode'] ?? '') === 'time') {
+                $this->returnToManageAppointment($phone, $session, $cacheKey);
+            } else {
+                $this->promptChoosingDate($phone, $session, $cacheKey);
+            }
 
             return;
         }
@@ -357,6 +471,19 @@ class WhatsAppBotService
         $selectedSlot = $timeOptions[$input];
         $session['start_time'] = $selectedSlot['time'];
         $session['final_barber_id'] = $selectedSlot['barber_id'];
+
+        if ($isEditing) {
+            $appt = Appointment::with('customer')->find($session['editing_appointment_id']);
+            if ($appt && $appt->customer) {
+                $session['customer_name'] = $appt->customer->name;
+                $session['customer_cpf'] = $appt->customer->cpf;
+            }
+            $session['step'] = 'CONFIRMING';
+            Cache::put($cacheKey, $session, now()->addHours(2));
+            $this->sendConfirmationSummary($phone, $session);
+
+            return;
+        }
 
         // Check if customer already exists in DB by WhatsApp number
         $cleanPhone = preg_replace('/\D/', '', $phone);
@@ -431,36 +558,54 @@ class WhatsAppBotService
 
     protected function sendConfirmationSummary(string $phone, array $session): void
     {
+        $isEditing = ! empty($session['editing_appointment_id']);
         $service = Service::find($session['service_id']);
         $barber = User::find($session['final_barber_id']);
         $dateFormatted = Carbon::parse($session['appointment_date'])->format('d/m/Y');
         $price = $service ? number_format($service->price, 2, ',', '.') : '0,00';
 
-        $summary = "📋 *Confirmação do Agendamento:*\n\n"
+        $header = $isEditing
+            ? '📋 *Confirmação da Alteração de Agendamento:*'
+            : '📋 *Confirmação do Agendamento:*';
+
+        $confirmLabel = $isEditing
+            ? '1️⃣ - ✅ *Confirmar Alteração*'
+            : '1️⃣ - ✅ *Confirmar Agendamento*';
+
+        $cancelLabel = $isEditing
+            ? '0️⃣ - 🔙 *Descartar e Voltar*'
+            : '0️⃣ - ❌ *Cancelar e Voltar ao Menu*';
+
+        $summary = "{$header}\n\n"
                  ."👤 *Cliente:* {$session['customer_name']}\n"
-                 ."📄 *CPF:* {$session['customer_cpf']}\n"
                  ."✂️ *Serviço:* {$service->name} (R$ {$price})\n"
                  .'💈 *Barbeiro:* '.($barber ? $barber->name : 'Nossa Equipe')."\n"
                  ."📅 *Data:* {$dateFormatted}\n"
                  ."⏰ *Horário:* {$session['start_time']}\n\n"
                  ."Envie:\n"
-                 ."1️⃣ - ✅ *Confirmar Agendamento*\n"
-                 .'0️⃣ - ❌ *Cancelar e Voltar ao Menu*';
+                 ."{$confirmLabel}\n"
+                 ."{$cancelLabel}";
 
         $this->reply($phone, $summary);
     }
 
     protected function handleConfirming(string $phone, string $input, array $session, string $cacheKey): void
     {
+        $isEditing = ! empty($session['editing_appointment_id']);
+
         if ($input === '0') {
-            Cache::forget($cacheKey);
-            $this->reply($phone, 'Agendamento cancelado. Se precisar de algo mais, basta digitar *menu*!');
+            if ($isEditing) {
+                $this->returnToManageAppointment($phone, $session, $cacheKey);
+            } else {
+                Cache::forget($cacheKey);
+                $this->reply($phone, 'Agendamento cancelado. Se precisar de algo mais, basta digitar *menu*!');
+            }
 
             return;
         }
 
         if ($input !== '1') {
-            $this->reply($phone, 'Digite *1* para confirmar o agendamento ou *0* para cancelar.');
+            $this->reply($phone, 'Digite *1* para confirmar ou *0* para cancelar.');
 
             return;
         }
@@ -475,9 +620,31 @@ class WhatsAppBotService
             return;
         }
 
+        $excludeId = $isEditing ? (int) $session['editing_appointment_id'] : null;
+
+        // Re-verify slot availability to prevent double-booking race condition
+        $availableSlots = $this->calculateAvailableSlots($session['appointment_date'], $barber->id, $service, $excludeId);
+        $slotStillFree = collect($availableSlots)->contains(fn ($s) => $s['time'] === $session['start_time']);
+
+        if (! $slotStillFree) {
+            $this->reply(
+                $phone,
+                "⚠️ Puxa, o horário *{$session['start_time']}* acabou de ser preenchido! Por favor, escolha outro horário disponível:"
+            );
+            $this->promptChoosingTimeForDate($phone, $session, $cacheKey, $session['appointment_date']);
+
+            return;
+        }
+
         $endTime = Carbon::parse($session['appointment_date'].' '.$session['start_time'])
             ->addMinutes($service->duration_minutes)
             ->format('H:i');
+
+        if ($isEditing) {
+            $this->confirmEditedAppointment($phone, $session, $cacheKey, $service, $barber, $endTime);
+
+            return;
+        }
 
         $cpfClean = preg_replace('/\D/', '', $session['customer_cpf']);
 
@@ -507,7 +674,7 @@ class WhatsAppBotService
             'manage_hash' => $manageHash,
         ]);
 
-        // Send Notification to Barber
+        // Send Notification to Barber & Admins
         try {
             $barber->notify(new NewAppointmentNotification($appointment));
 
@@ -519,6 +686,14 @@ class WhatsAppBotService
                            ."📅 Data: {$dateFormatted}\n"
                            ."⏰ Horário: {$session['start_time']}";
                 SendWhatsAppMessage::dispatch($barber->whatsapp, $barberMsg);
+            }
+
+            $admins = User::whereJsonContains('roles', 'admin')
+                ->where('id', '!=', $barber->id)
+                ->get();
+
+            foreach ($admins as $admin) {
+                $admin->notify(new NewAppointmentNotification($appointment));
             }
         } catch (\Exception $e) {
             Log::error('Erro ao notificar barbeiro: '.$e->getMessage());
@@ -537,7 +712,88 @@ class WhatsAppBotService
                   ."💈 *Barbeiro:* {$barber->name}\n"
                   ."✂️ *Serviço:* {$service->name}\n"
                   ."📍 *Local:* Barbearia Barcelona\n\n"
-                  ."Caso precise alterar ou cancelar seu horário, você pode enviar *2* aqui a qualquer momento ou acessar:\n"
+                  ."Caso precise alterar ou cancelar seu horário, você pode enviar *2* no menu principal a qualquer momento ou acessar:\n"
+                  ."{$manageUrl}\n\n"
+                  .'Te esperamos lá!';
+
+        $this->reply($phone, $finalMsg);
+    }
+
+    protected function confirmEditedAppointment(
+        string $phone,
+        array $session,
+        string $cacheKey,
+        Service $service,
+        User $barber,
+        string $endTime
+    ): void {
+        $appointment = Appointment::with(['user', 'service', 'customer'])->find($session['editing_appointment_id']);
+
+        if (! $appointment || $appointment->status !== 'scheduled') {
+            Cache::forget($cacheKey);
+            $this->reply($phone, 'Este agendamento não está mais disponível para alteração. Envie *menu* para iniciar.');
+
+            return;
+        }
+
+        $oldBarber = $appointment->user;
+        $oldDateFormatted = Carbon::parse($appointment->appointment_date)->format('d/m/Y');
+        $oldTime = substr($appointment->start_time, 0, 5);
+        $oldServiceName = $appointment->service ? $appointment->service->name : 'Serviço';
+        $customerName = $appointment->customer ? $appointment->customer->name : ($session['customer_name'] ?? 'Cliente');
+
+        $appointment->update([
+            'user_id' => $barber->id,
+            'service_id' => $service->id,
+            'appointment_date' => $session['appointment_date'],
+            'start_time' => $session['start_time'],
+            'end_time' => $endTime,
+        ]);
+
+        $newDateFormatted = Carbon::parse($session['appointment_date'])->format('d/m/Y');
+
+        // Notify Barber(s)
+        try {
+            if ($oldBarber && $oldBarber->id !== $barber->id) {
+                if (! empty($oldBarber->whatsapp) && $oldBarber->whatsapp !== $phone) {
+                    $msgOldBarber = "🔄 *Agendamento Transferido via WhatsApp*\n\n"
+                                  ."O cliente *{$customerName}* transferiu o agendamento de *{$oldDateFormatted} às {$oldTime}* ({$oldServiceName}) para outro profissional.";
+                    SendWhatsAppMessage::dispatch($oldBarber->whatsapp, $msgOldBarber);
+                }
+
+                $barber->notify(new NewAppointmentNotification($appointment));
+
+                if (! empty($barber->whatsapp) && $barber->whatsapp !== $phone) {
+                    $msgNewBarber = "🔔 *Agendamento Transferido para Você!*\n\n"
+                                  ."👤 Cliente: {$customerName}\n"
+                                  ."✂️ Serviço: {$service->name}\n"
+                                  ."📅 Data: {$newDateFormatted}\n"
+                                  ."⏰ Horário: {$session['start_time']}";
+                    SendWhatsAppMessage::dispatch($barber->whatsapp, $msgNewBarber);
+                }
+            } elseif (! empty($barber->whatsapp) && $barber->whatsapp !== $phone) {
+                $msgBarber = "🔄 *Agendamento Alterado via WhatsApp*\n\n"
+                           ."👤 Cliente: {$customerName}\n"
+                           ."❌ *Antes:* {$oldDateFormatted} às {$oldTime} ({$oldServiceName})\n"
+                           ."✅ *Agora:* {$newDateFormatted} às {$session['start_time']} ({$service->name})";
+                SendWhatsAppMessage::dispatch($barber->whatsapp, $msgBarber);
+            }
+        } catch (\Exception $e) {
+            Log::error('Erro ao notificar barbeiro sobre alteração: '.$e->getMessage());
+        }
+
+        Cache::forget($cacheKey);
+
+        $manageUrl = url('/agendamento/'.$appointment->manage_hash);
+
+        $finalMsg = "✅ *AGENDAMENTO ATUALIZADO COM SUCESSO!* ✅\n\n"
+                  ."Tudo certo, *{$customerName}*! Seu agendamento foi remarcado com os novos dados:\n\n"
+                  ."📅 *Nova Data:* {$newDateFormatted}\n"
+                  ."⏰ *Novo Horário:* {$session['start_time']}\n"
+                  ."💈 *Barbeiro:* {$barber->name}\n"
+                  ."✂️ *Serviço:* {$service->name}\n"
+                  ."📍 *Local:* Barbearia Barcelona\n\n"
+                  ."Se precisar fazer outra alteração, basta enviar *menu* ou acessar:\n"
                   ."{$manageUrl}\n\n"
                   .'Te esperamos lá!';
 
@@ -552,9 +808,9 @@ class WhatsAppBotService
         $cleanPhone = preg_replace('/\D/', '', $phone);
         $last9 = substr($cleanPhone, -9);
 
-        $customer = Customer::where('whatsapp', 'like', "%{$last9}%")->first();
+        $customerIds = Customer::where('whatsapp', 'like', "%{$last9}%")->pluck('id');
 
-        if (! $customer) {
+        if ($customerIds->isEmpty()) {
             $this->reply(
                 $phone,
                 "Você ainda não possui nenhum agendamento cadastrado conosco.\n\nDigite *1* para agendar agora ou *menu* para voltar."
@@ -563,70 +819,238 @@ class WhatsAppBotService
             return;
         }
 
-        $upcoming = Appointment::with(['service', 'user'])
-            ->where('customer_id', $customer->id)
+        $upcomingList = Appointment::with(['service', 'user', 'customer'])
+            ->whereIn('customer_id', $customerIds)
             ->where('appointment_date', '>=', date('Y-m-d'))
             ->where('status', 'scheduled')
             ->orderBy('appointment_date', 'asc')
             ->orderBy('start_time', 'asc')
-            ->first();
+            ->get();
 
-        if (! $upcoming) {
+        if ($upcomingList->isEmpty()) {
+            $customer = Customer::find($customerIds->first());
+            $customerName = $customer ? $customer->name : ($session['pushName'] ?? 'Cliente');
             $this->reply(
                 $phone,
-                "Olá, *{$customer->name}*! Você não possui nenhum agendamento pendente no momento.\n\nDigite *1* para agendar um novo horário ou *menu* para voltar."
+                "Olá, *{$customerName}*! Você não possui nenhum agendamento pendente no momento.\n\nDigite *1* para agendar um novo horário ou *menu* para voltar."
             );
 
             return;
         }
 
-        $dateFormatted = Carbon::parse($upcoming->appointment_date)->format('d/m/Y');
-        $time = substr($upcoming->start_time, 0, 5);
-        $barberName = $upcoming->user ? $upcoming->user->name : 'Equipe';
-        $serviceName = $upcoming->service ? $upcoming->service->name : 'Serviço';
+        if ($upcomingList->count() === 1) {
+            $this->showManageAppointmentMenu($phone, $upcomingList->first(), $session, $cacheKey);
 
-        $session['step'] = 'CONFIRM_CANCEL_APPT';
-        $session['cancel_appointment_id'] = $upcoming->id;
+            return;
+        }
+
+        // Multiple upcoming appointments: let customer choose which one to manage
+        $apptOptions = [];
+        $text = "📋 *Seus Próximos Agendamentos:*\n\n";
+        $idx = 1;
+
+        foreach ($upcomingList as $appt) {
+            $apptOptions[$idx] = $appt->id;
+            $dateFormatted = Carbon::parse($appt->appointment_date)->format('d/m/Y');
+            $time = substr($appt->start_time, 0, 5);
+            $barberName = $appt->user ? $appt->user->name : 'Equipe';
+            $serviceName = $appt->service ? $appt->service->name : 'Serviço';
+            $text .= "{$idx}️⃣ - *{$dateFormatted} às {$time}* | {$serviceName} com *{$barberName}*\n";
+            $idx++;
+        }
+
+        $text .= "\n0️⃣ - 🔙 *Voltar ao Menu Principal*\n\n";
+        $text .= 'Envie o *número* do agendamento que deseja alterar ou cancelar:';
+
+        $session['step'] = 'SELECTING_APPT';
+        $session['appt_options'] = $apptOptions;
         Cache::put($cacheKey, $session, now()->addHours(2));
 
-        $msg = "📋 *Seu Agendamento Atual:*\n\n"
-             ."👤 *Cliente:* {$customer->name}\n"
-             ."✂️ *Serviço:* {$serviceName}\n"
-             ."💈 *Barbeiro:* {$barberName}\n"
-             ."📅 *Data:* {$dateFormatted} às {$time}\n\n"
-             ."Deseja cancelar este horário?\n"
-             ."1️⃣ - ❌ *Sim, cancelar este agendamento*\n"
-             .'0️⃣ - 🔙 *Não, manter e voltar ao menu*';
-
-        $this->reply($phone, $msg);
+        $this->reply($phone, $text);
     }
 
-    protected function handleConfirmCancelAppt(string $phone, string $input, array $session, string $cacheKey): void
+    protected function handleSelectingAppt(string $phone, string $input, array $session, string $cacheKey): void
     {
-        if ($input === '1') {
-            $apptId = $session['cancel_appointment_id'] ?? null;
-            $appt = Appointment::find($apptId);
+        if ($input === '0') {
+            $this->sendMainMenu($phone, $session['pushName'] ?? 'Cliente');
 
+            return;
+        }
+
+        $apptOptions = $session['appt_options'] ?? [];
+        if (! isset($apptOptions[$input])) {
+            $this->reply($phone, 'Opção inválida. Envie o número de um dos agendamentos listados acima (ou *0* para voltar).');
+
+            return;
+        }
+
+        $appt = Appointment::with(['service', 'user', 'customer'])->find($apptOptions[$input]);
+        if (! $appt || $appt->status !== 'scheduled') {
+            $this->showCustomerAppointments($phone, $session, $cacheKey);
+
+            return;
+        }
+
+        $this->showManageAppointmentMenu($phone, $appt, $session, $cacheKey);
+    }
+
+    protected function returnToManageAppointment(string $phone, array $session, string $cacheKey): void
+    {
+        $apptId = $session['editing_appointment_id'] ?? null;
+        if ($apptId) {
+            $appt = Appointment::with(['service', 'user', 'customer'])->find($apptId);
             if ($appt && $appt->status === 'scheduled') {
-                $appt->update(['status' => 'canceled']);
-
-                // Notify barber
-                if ($appt->user && ! empty($appt->user->whatsapp)) {
-                    $dateFormatted = Carbon::parse($appt->appointment_date)->format('d/m/Y');
-                    $msgBarber = "⚠️ *Agendamento Cancelado via WhatsApp*\n\n"
-                               ."O cliente cancelou o horário do dia {$dateFormatted} às ".substr($appt->start_time, 0, 5);
-                    SendWhatsAppMessage::dispatch($appt->user->whatsapp, $msgBarber);
-                }
-
-                Cache::forget($cacheKey);
-                $this->reply($phone, "✅ Seu agendamento foi cancelado com sucesso.\n\nQuando quiser remarcar, basta digitar *menu*!");
+                $this->showManageAppointmentMenu($phone, $appt, $session, $cacheKey);
 
                 return;
             }
         }
 
-        Cache::forget($cacheKey);
-        $this->reply($phone, 'Seu horário foi mantido! Se precisar de algo, envie *menu*.');
+        $this->showCustomerAppointments($phone, $session, $cacheKey);
+    }
+
+    protected function showManageAppointmentMenu(string $phone, Appointment $upcoming, array $session, string $cacheKey): void
+    {
+        $dateFormatted = Carbon::parse($upcoming->appointment_date)->format('d/m/Y');
+        $time = substr($upcoming->start_time, 0, 5);
+        $barberName = $upcoming->user ? $upcoming->user->name : 'Equipe';
+        $serviceName = $upcoming->service ? $upcoming->service->name : 'Serviço';
+        $price = $upcoming->service ? number_format($upcoming->service->price, 2, ',', '.') : '0,00';
+        $customerName = $upcoming->customer ? $upcoming->customer->name : ($session['pushName'] ?? 'Cliente');
+
+        $session['step'] = 'MANAGING_APPT';
+        $session['editing_appointment_id'] = $upcoming->id;
+        $session['cancel_appointment_id'] = $upcoming->id;
+        $session['service_id'] = $upcoming->service_id;
+        $session['barber_id'] = $upcoming->user_id;
+        $session['final_barber_id'] = $upcoming->user_id;
+        $session['appointment_date'] = $upcoming->appointment_date;
+        $session['current_appt_date'] = $upcoming->appointment_date;
+        $session['current_appt_time'] = $time;
+        unset($session['edit_mode']);
+
+        Cache::put($cacheKey, $session, now()->addHours(2));
+
+        $msg = "📋 *Seu Agendamento Atual:*\n\n"
+             ."👤 *Cliente:* {$customerName}\n"
+             ."✂️ *Serviço:* {$serviceName} (R$ {$price})\n"
+             ."💈 *Barbeiro:* {$barberName}\n"
+             ."📅 *Data:* {$dateFormatted}\n"
+             ."⏰ *Horário:* {$time}\n\n"
+             ."O que você deseja fazer? Envie o *número* da opção:\n\n"
+             ."1️⃣ - ⏰ *Trocar Horário* (mesma data e barbeiro)\n"
+             ."2️⃣ - 📅 *Trocar Data* (e escolher horário)\n"
+             ."3️⃣ - 💈 *Trocar Barbeiro*\n"
+             ."4️⃣ - ✂️ *Trocar Serviço*\n"
+             ."5️⃣ - ❌ *Cancelar Agendamento*\n"
+             .'0️⃣ - 🔙 *Voltar ao Menu Principal*';
+
+        $this->reply($phone, $msg);
+    }
+
+    protected function handleManagingAppt(string $phone, string $input, array $session, string $cacheKey): void
+    {
+        if ($input === '0') {
+            $this->sendMainMenu($phone, $session['pushName'] ?? 'Cliente');
+
+            return;
+        }
+
+        $apptId = $session['editing_appointment_id'] ?? null;
+        $appt = Appointment::with(['service', 'user', 'customer'])->find($apptId);
+
+        if (! $appt || $appt->status !== 'scheduled') {
+            Cache::forget($cacheKey);
+            $this->reply($phone, 'Este agendamento não foi encontrado ou já foi encerrado. Envie *menu* para voltar ao início.');
+
+            return;
+        }
+
+        if ($input === '1') {
+            // 1 - Trocar Horário (mantendo data, barbeiro e serviço)
+            $session['edit_mode'] = 'time';
+            $session['service_id'] = $appt->service_id;
+            $session['barber_id'] = $appt->user_id;
+            $session['appointment_date'] = $appt->appointment_date;
+            $this->promptChoosingTimeForDate($phone, $session, $cacheKey, $appt->appointment_date);
+        } elseif ($input === '2') {
+            // 2 - Trocar Data (mantendo barbeiro e serviço, depois escolhe horário)
+            $session['edit_mode'] = 'date';
+            $session['service_id'] = $appt->service_id;
+            $session['barber_id'] = $appt->user_id;
+            $this->promptChoosingDate($phone, $session, $cacheKey);
+        } elseif ($input === '3') {
+            // 3 - Trocar Barbeiro
+            $session['edit_mode'] = 'barber';
+            $session['service_id'] = $appt->service_id;
+            $session['appointment_date'] = $appt->appointment_date;
+            $this->promptChoosingBarber($phone, $session, $cacheKey);
+        } elseif ($input === '4') {
+            // 4 - Trocar Serviço
+            $session['edit_mode'] = 'service';
+            $session['barber_id'] = $appt->user_id;
+            $session['appointment_date'] = $appt->appointment_date;
+            $this->startScheduling($phone, $session, $cacheKey);
+        } elseif ($input === '5') {
+            // 5 - Cancelar Agendamento
+            $dateFormatted = Carbon::parse($appt->appointment_date)->format('d/m/Y');
+            $time = substr($appt->start_time, 0, 5);
+            $barberName = $appt->user ? $appt->user->name : 'Equipe';
+            $serviceName = $appt->service ? $appt->service->name : 'Serviço';
+
+            $session['step'] = 'CONFIRM_CANCEL_APPT';
+            $session['cancel_appointment_id'] = $appt->id;
+            Cache::put($cacheKey, $session, now()->addHours(2));
+
+            $msg = "⚠️ *Confirmação de Cancelamento*\n\n"
+                 ."Tem certeza que deseja cancelar o agendamento abaixo?\n\n"
+                 ."✂️ *Serviço:* {$serviceName}\n"
+                 ."💈 *Barbeiro:* {$barberName}\n"
+                 ."📅 *Data:* {$dateFormatted} às {$time}\n\n"
+                 ."1️⃣ - ❌ *Sim, cancelar este agendamento*\n"
+                 .'0️⃣ - 🔙 *Não, voltar às opções*';
+
+            $this->reply($phone, $msg);
+        } else {
+            $this->reply($phone, 'Opção inválida. Envie *1* (Horário), *2* (Data), *3* (Barbeiro), *4* (Serviço), *5* (Cancelar) ou *0* (Voltar).');
+        }
+    }
+
+    protected function handleConfirmCancelAppt(string $phone, string $input, array $session, string $cacheKey): void
+    {
+        if ($input === '0') {
+            $this->returnToManageAppointment($phone, $session, $cacheKey);
+
+            return;
+        }
+
+        if ($input === '1') {
+            $apptId = $session['cancel_appointment_id'] ?? null;
+            $appt = Appointment::with(['user', 'service', 'customer'])->find($apptId);
+
+            if ($appt && $appt->status === 'scheduled') {
+                $appt->update(['status' => 'canceled']);
+
+                // Notify barber
+                if ($appt->user && ! empty($appt->user->whatsapp) && $appt->user->whatsapp !== $phone) {
+                    $dateFormatted = Carbon::parse($appt->appointment_date)->format('d/m/Y');
+                    $customerName = $appt->customer ? $appt->customer->name : 'Cliente';
+                    $serviceName = $appt->service ? $appt->service->name : 'Serviço';
+                    $msgBarber = "❌ *Agendamento Cancelado via WhatsApp*\n\n"
+                               ."👤 Cliente: {$customerName}\n"
+                               ."✂️ Serviço: {$serviceName}\n"
+                               ."📅 Data: {$dateFormatted} às ".substr($appt->start_time, 0, 5);
+                    SendWhatsAppMessage::dispatch($appt->user->whatsapp, $msgBarber);
+                }
+
+                Cache::forget($cacheKey);
+                $this->reply($phone, "✅ Seu agendamento foi cancelado com sucesso.\n\nQuando quiser agendar novamente, basta digitar *menu*!");
+
+                return;
+            }
+        }
+
+        $this->reply($phone, 'Opção inválida. Digite *1* para confirmar o cancelamento ou *0* para voltar.');
     }
 
     /**
@@ -670,7 +1094,7 @@ class WhatsAppBotService
     /**
      * Slot calculation engine
      */
-    protected function calculateAvailableSlots(string $date, $barberId, Service $service): array
+    protected function calculateAvailableSlots(string $date, $barberId, Service $service, ?int $excludeAppointmentId = null): array
     {
         $availableSlots = [];
         $duration = $service->duration_minutes;
@@ -683,7 +1107,7 @@ class WhatsAppBotService
                 ->filter(fn ($u) => in_array('barber', $u->roles ?? []));
         } else {
             $barber = User::find($barberId);
-            $barbers = $barber ? collect([$barber]) : collect();
+            $barbers = ($barber && $barber->is_active) ? collect([$barber]) : collect();
         }
 
         if ($barbers->isEmpty()) {
@@ -699,6 +1123,7 @@ class WhatsAppBotService
 
             $appointments = Appointment::where('user_id', $b->id)
                 ->where('appointment_date', $date)
+                ->when($excludeAppointmentId, fn ($q) => $q->where('id', '!=', $excludeAppointmentId))
                 ->whereIn('status', ['scheduled', 'in_progress', 'awaiting_payment'])
                 ->get();
 
